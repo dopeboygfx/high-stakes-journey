@@ -1,5 +1,4 @@
-
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, ReactNode } from "react";
 import { toast } from "sonner";
 import { TrendingDown, TrendingUp, AlertTriangle } from "lucide-react";
 import { useGame } from "../context/GameContext";
@@ -22,21 +21,21 @@ export const useMarket = (cityId: string) => {
         const event = MARKET_EVENTS[Math.floor(Math.random() * MARKET_EVENTS.length)];
         dispatch({ type: "ADD_MARKET_EVENT", event: { ...event } });
         
-        let EventIcon;
+        let EventIcon = AlertTriangle;
         if (event.type === "crash") {
           EventIcon = TrendingDown;
         } else if (event.type === "shortage") {
           EventIcon = TrendingUp;
-        } else {
-          EventIcon = AlertTriangle;
         }
         
-        toast.info(
+        const toastContent = (
           <div className="flex items-center gap-2">
             <EventIcon className="w-4 h-4" />
             <span>{event.description}</span>
           </div>
         );
+        
+        toast.info(toastContent);
       }
     }, 30000);
 
