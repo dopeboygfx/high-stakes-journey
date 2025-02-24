@@ -83,6 +83,7 @@ export type GameState = {
   wantedLevel: number; // 0-5 stars
   bribeAttempts: number;
   activeMarketEvents: MarketEvent[];
+  cities: City[]; // Added this line
 };
 
 export type GameAction =
