@@ -4,6 +4,7 @@ import { useGame } from "../context/GameContext";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { GameHeader } from "../components/game/GameHeader";
+import { MarketPlace } from "../components/game/MarketPlace";
 import { TravelOptions } from "../components/game/TravelOptions";
 import { Inventory } from "../components/game/Inventory";
 import { GameOver } from "../components/game/GameOver";
@@ -33,7 +34,8 @@ const Index = () => {
             Enter City
           </Link>
         </div>
-        <div className="grid grid-cols-1 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <MarketPlace />
           <TravelOptions />
         </div>
         <Inventory />
