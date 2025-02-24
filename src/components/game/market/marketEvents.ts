@@ -4,27 +4,43 @@ import { DRUGS } from "../../../constants/gameData";
 
 export const MARKET_EVENTS: MarketEvent[] = [
   {
-    id: "market_crash",
-    type: "crash",
-    description: "Market crash! Prices are dropping drastically!",
-    affectedDrugs: DRUGS.map(d => d.id),
-    multiplier: 0.5,
+    id: "drug_bust",
+    type: "shortage",
+    description: "Major drug bust! Suppliers are laying low!",
+    affectedDrugs: [DRUGS[Math.floor(Math.random() * DRUGS.length)].id],
+    multiplier: 2.5,
     duration: 60000,
   },
   {
-    id: "drug_shortage",
+    id: "police_raid",
     type: "shortage",
-    description: "Supply shortage! Prices are skyrocketing!",
+    description: "Police raid took out a major supplier!",
     affectedDrugs: [DRUGS[Math.floor(Math.random() * DRUGS.length)].id],
     multiplier: 2.0,
     duration: 45000,
   },
   {
-    id: "local_surplus",
+    id: "market_saturation",
     type: "surplus",
-    description: "Local surplus! Great deals available!",
+    description: "Market flooded with product! Prices dropping!",
     affectedDrugs: [DRUGS[Math.floor(Math.random() * DRUGS.length)].id],
-    multiplier: 0.7,
+    multiplier: 0.6,
     duration: 30000,
   },
+  {
+    id: "gang_warfare",
+    type: "shortage",
+    description: "Gang warfare disrupted supply chains!",
+    affectedDrugs: DRUGS.map(d => d.id),
+    multiplier: 1.8,
+    duration: 50000,
+  },
+  {
+    id: "new_supplier",
+    type: "surplus",
+    description: "New supplier in town flooding the market!",
+    affectedDrugs: [DRUGS[Math.floor(Math.random() * DRUGS.length)].id],
+    multiplier: 0.7,
+    duration: 40000,
+  }
 ];
