@@ -1,10 +1,19 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUp, ArrowDown, Pills, Cannabis, Flask, Wine, Candy } from "lucide-react";
 import { useGame } from "../../context/GameContext";
-import { CITIES } from "../../constants/gameData";
+import { CITIES, DRUGS } from "../../constants/gameData";
 import { formatMoney, calculateCityPrice } from "../../utils/gameUtils";
+
+// Map drug IDs to their corresponding icons
+const drugIcons: Record<string, any> = {
+  weed: Cannabis,
+  cocaine: Pills,
+  lsd: Flask,
+  shrooms: Wine,
+  ecstasy: Candy,
+};
 
 export const MarketPlace = () => {
   const { state, dispatch } = useGame();
@@ -62,53 +71,59 @@ export const MarketPlace = () => {
     <div className="space-y-4">
       <h2 className="text-2xl font-semibold">Market</h2>
       <div className="grid gap-4">
-        {currentCity.availableDrugs.map((drug) => (
-          <div
-            key={drug.id}
-            className="p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 hover:border-border transition-colors"
-          >
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="font-medium">{drug.name}</h3>
-                <p className="text-sm text-muted-foreground">
-                  Price: {formatMoney(cityPrices[drug.id] || 0)}
-                </p>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="flex flex-col space-y-1">
-                  <button
-                    onClick={() => handleBuyDrug(drug.id)}
-                    className="px-3 py-1 bg-game-success text-white rounded hover:opacity-90 transition-opacity"
-                  >
-                    Buy
-                  </button>
-                  <button
-                    onClick={() => handleBuyDrug(drug.id, -1)}
-                    className="px-3 py-1 bg-game-success/80 text-white rounded hover:opacity-90 transition-opacity flex items-center justify-center gap-1"
-                    title="Buy Maximum Affordable Amount"
-                  >
-                    Max <ArrowUp className="w-3 h-3" />
-                  </button>
+        {currentCity.availableDrugs.map((drug) => {
+          const DrugIcon = drugIcons[drug.id];
+          return (
+            <div
+              key={drug.id}
+              className="p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 hover:border-border transition-colors"
+            >
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <DrugIcon className="w-6 h-6 text-muted-foreground" />
+                  <div>
+                    <h3 className="font-medium">{drug.name}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Price: {formatMoney(cityPrices[drug.id] || 0)}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex flex-col space-y-1">
-                  <button
-                    onClick={() => handleSellDrug(drug.id)}
-                    className="px-3 py-1 bg-game-risk text-white rounded hover:opacity-90 transition-opacity"
-                  >
-                    Sell
-                  </button>
-                  <button
-                    onClick={() => handleSellDrug(drug.id, -1)}
-                    className="px-3 py-1 bg-game-risk/80 text-white rounded hover:opacity-90 transition-opacity flex items-center justify-center gap-1"
-                    title="Sell All Units"
-                  >
-                    Max <ArrowDown className="w-3 h-3" />
-                  </button>
+                <div className="flex items-center space-x-2">
+                  <div className="flex flex-col space-y-1">
+                    <button
+                      onClick={() => handleBuyDrug(drug.id)}
+                      className="px-3 py-1 bg-game-success text-white rounded hover:opacity-90 transition-opacity"
+                    >
+                      Buy
+                    </button>
+                    <button
+                      onClick={() => handleBuyDrug(drug.id, -1)}
+                      className="px-3 py-1 bg-game-success/80 text-white rounded hover:opacity-90 transition-opacity flex items-center justify-center gap-1"
+                      title="Buy Maximum Affordable Amount"
+                    >
+                      Max <ArrowUp className="w-3 h-3" />
+                    </button>
+                  </div>
+                  <div className="flex flex-col space-y-1">
+                    <button
+                      onClick={() => handleSellDrug(drug.id)}
+                      className="px-3 py-1 bg-game-risk text-white rounded hover:opacity-90 transition-opacity"
+                    >
+                      Sell
+                    </button>
+                    <button
+                      onClick={() => handleSellDrug(drug.id, -1)}
+                      className="px-3 py-1 bg-game-risk/80 text-white rounded hover:opacity-90 transition-opacity flex items-center justify-center gap-1"
+                      title="Sell All Units"
+                    >
+                      Max <ArrowDown className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

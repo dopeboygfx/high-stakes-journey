@@ -1,8 +1,16 @@
 
-import { Truck } from "lucide-react";
+import { Truck, Pills, Cannabis, Flask, Wine, Candy } from "lucide-react";
 import { toast } from "sonner";
 import { useGame } from "../../context/GameContext";
 import { CITIES, VEHICLES, BASE_TRAVEL_SPEED } from "../../constants/gameData";
+
+const drugIcons: Record<string, any> = {
+  weed: Cannabis,
+  cocaine: Pills,
+  lsd: Flask,
+  shrooms: Wine,
+  ecstasy: Candy,
+};
 
 export const TravelOptions = () => {
   const { state, dispatch } = useGame();
@@ -82,13 +90,25 @@ export const TravelOptions = () => {
                       Travel time: {Math.round(travelTime / 1000)}s
                     </p>
                   )}
+                  <div className="flex gap-2 mt-2">
+                    {city.availableDrugs.map((drug) => {
+                      const DrugIcon = drugIcons[drug.id];
+                      return (
+                        <DrugIcon
+                          key={drug.id}
+                          className="w-4 h-4 text-muted-foreground"
+                          title={`${drug.name} available here`}
+                        />
+                      );
+                    })}
+                  </div>
                 </div>
                 {city.id !== state.currentCity && (
                   <Truck className="w-5 h-5 text-muted-foreground" />
                 )}
               </div>
             </button>
-          )
+          );
         })}
       </div>
     </div>
