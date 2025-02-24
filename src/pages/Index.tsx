@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useGame } from "../context/GameContext";
 import { CITIES, DRUGS } from "../constants/gameData";
 import { toast } from "sonner";
@@ -14,14 +14,29 @@ const formatMoney = (amount: number) =>
 const Index = () => {
   const { state, dispatch } = useGame();
   const currentCity = CITIES.find((city) => city.id === state.currentCity)!;
+  const [cityPrices, setCityPrices] = useState<Record<string, number>>({});
 
-  const calculatePrice = (basePrice: number, volatility: number) => {
+  const calculatePrice = useCallback((basePrice: number, volatility: number) => {
     const randomFactor = 1 + (Math.random() - 0.5) * 2 * volatility;
     return Math.round(basePrice * currentCity.priceMultiplier * randomFactor);
-  };
+  }, [currentCity.priceMultiplier]);
 
-  const handleBuyDrug = (drugId: string, basePrice: number, volatility: number) => {
-    const price = calculatePrice(basePrice, volatility);
+  // Initialize or update prices when traveling to a new city
+  const initializePrices = useCallback(() => {
+    const newPrices: Record<string, number> = {};
+    currentCity.availableDrugs.forEach((drug) => {
+      newPrices[drug.id] = calculatePrice(drug.basePrice, drug.volatility);
+    });
+    setCityPrices(newPrices);
+  }, [currentCity.availableDrugs, calculatePrice]);
+
+  // Initialize prices on first render and when changing cities
+  useEffect(() => {
+    initializePrices();
+  }, [currentCity.id, initializePrices]);
+
+  const handleBuyDrug = (drugId: string) => {
+    const price = cityPrices[drugId];
     if (state.money < price) {
       toast.error("Not enough money!");
       return;
@@ -30,13 +45,13 @@ const Index = () => {
     toast.success("Purchase successful!");
   };
 
-  const handleSellDrug = (drugId: string, basePrice: number, volatility: number) => {
+  const handleSellDrug = (drugId: string) => {
     const inventory = state.inventory.find((item) => item.drugId === drugId);
     if (!inventory || inventory.quantity === 0) {
       toast.error("No inventory to sell!");
       return;
     }
-    const price = calculatePrice(basePrice, volatility);
+    const price = cityPrices[drugId];
     dispatch({ type: "SELL_DRUG", drugId, quantity: 1, profit: price });
     toast.success("Sale successful!");
   };
@@ -121,22 +136,18 @@ const Index = () => {
                     <div>
                       <h3 className="font-medium">{drug.name}</h3>
                       <p className="text-sm text-muted-foreground">
-                        Price: {formatMoney(calculatePrice(drug.basePrice, drug.volatility))}
+                        Price: {formatMoney(cityPrices[drug.id] || 0)}
                       </p>
                     </div>
                     <div className="space-x-2">
                       <button
-                        onClick={() =>
-                          handleBuyDrug(drug.id, drug.basePrice, drug.volatility)
-                        }
+                        onClick={() => handleBuyDrug(drug.id)}
                         className="px-3 py-1 bg-game-success text-white rounded hover:opacity-90 transition-opacity"
                       >
                         Buy
                       </button>
                       <button
-                        onClick={() =>
-                          handleSellDrug(drug.id, drug.basePrice, drug.volatility)
-                        }
+                        onClick={() => handleSellDrug(drug.id)}
                         className="px-3 py-1 bg-game-risk text-white rounded hover:opacity-90 transition-opacity"
                       >
                         Sell
