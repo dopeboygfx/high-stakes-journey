@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown, Pills, Cannabis, Flask, Wine, Candy } from "lucide-react";
+import { ArrowUp, ArrowDown, Pill, Cannabis, Vial, Wine, Candy } from "lucide-react";
 import { useGame } from "../../context/GameContext";
 import { CITIES, DRUGS } from "../../constants/gameData";
 import { formatMoney, calculateCityPrice } from "../../utils/gameUtils";
@@ -9,8 +9,8 @@ import { formatMoney, calculateCityPrice } from "../../utils/gameUtils";
 // Map drug IDs to their corresponding icons
 const drugIcons: Record<string, any> = {
   weed: Cannabis,
-  cocaine: Pills,
-  lsd: Flask,
+  cocaine: Pill,
+  lsd: Vial,
   shrooms: Wine,
   ecstasy: Candy,
 };

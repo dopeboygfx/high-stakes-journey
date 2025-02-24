@@ -1,13 +1,13 @@
 
-import { Truck, Pills, Cannabis, Flask, Wine, Candy } from "lucide-react";
+import { Truck, Pill, Cannabis, Vial, Wine, Candy } from "lucide-react";
 import { toast } from "sonner";
 import { useGame } from "../../context/GameContext";
 import { CITIES, VEHICLES, BASE_TRAVEL_SPEED } from "../../constants/gameData";
 
 const drugIcons: Record<string, any> = {
   weed: Cannabis,
-  cocaine: Pills,
-  lsd: Flask,
+  cocaine: Pill,
+  lsd: Vial,
   shrooms: Wine,
   ecstasy: Candy,
 };
