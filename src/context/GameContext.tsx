@@ -24,6 +24,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       return {
         ...state,
         money: state.money - action.cost,
+        heat: Math.min(state.heat + 5, 100), // Now we increase heat when buying drugs
         inventory: [
           ...state.inventory.filter((item) => item.drugId !== action.drugId),
           {
@@ -49,8 +50,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
     case "TRAVEL_TO_CITY":
       return {
         ...state,
-        currentCity: action.cityId,
-        heat: Math.min(state.heat + 5, 100),
+        currentCity: action.cityId, // No longer increases heat when traveling
       };
     case "INCREASE_HEAT":
       return {
