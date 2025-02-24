@@ -74,6 +74,7 @@ export type GameState = {
   inventory: Inventory[];
   heat: number;
   gameOver: boolean;
+  finalScore?: number;
   currentVehicle: string;
   isTraveling: boolean;
   lastEvent?: GameEvent;

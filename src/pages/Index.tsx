@@ -16,8 +16,8 @@ const Index = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"market" | "travel">("market");
 
-  if (state.gameOver) {
-    return <GameOver />;
+  if (state.gameOver && state.finalScore !== undefined) {
+    return <GameOver finalScore={state.finalScore} />;
   }
 
   return (

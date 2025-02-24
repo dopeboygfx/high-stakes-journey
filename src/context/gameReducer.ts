@@ -151,6 +151,7 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
       return {
         ...state,
         gameOver: true,
+        finalScore: state.money + (state.abilities.filter(a => a.unlocked).length * 5000),
       };
     default:
       return state;
