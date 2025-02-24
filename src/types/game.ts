@@ -1,4 +1,3 @@
-
 export type Drug = {
   id: string;
   name: string;
@@ -68,6 +67,8 @@ export type MarketEvent = {
   startTime?: number;
 };
 
+export type TimeOfDay = 'dawn' | 'day' | 'dusk' | 'night';
+
 export type GameState = {
   money: number;
   currentCity: string;
@@ -84,7 +85,9 @@ export type GameState = {
   wantedLevel: number; // 0-5 stars
   bribeAttempts: number;
   activeMarketEvents: MarketEvent[];
-  cities: City[]; // Added this line
+  cities: City[];
+  timeOfDay: TimeOfDay;
+  dayCount: number;
 };
 
 export type GameAction =
@@ -103,4 +106,5 @@ export type GameAction =
   | { type: "ATTEMPT_BRIBE"; amount: number }
   | { type: "ADD_MARKET_EVENT"; event: MarketEvent }
   | { type: "REMOVE_MARKET_EVENT"; eventId: string }
+  | { type: "ADVANCE_TIME" }
   | { type: "GAME_OVER" };

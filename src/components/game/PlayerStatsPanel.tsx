@@ -1,15 +1,30 @@
 
-import { Wallet, Heart, Shield, Zap } from "lucide-react";
+import { Wallet, Heart, Shield, Zap, Clock } from "lucide-react";
 import { useGame } from "../../context/GameContext";
+import { useGameTime } from "../../hooks/useGameTime";
 import { formatMoney } from "../../utils/gameUtils";
 import { CITIES } from "../../constants/gameData";
 
 export const PlayerStatsPanel = () => {
   const { state } = useGame();
+  const { timeOfDay } = useGameTime();
+  
+  const getTimeIcon = () => {
+    switch (timeOfDay) {
+      case 'dawn':
+        return '🌅';
+      case 'day':
+        return '☀️';
+      case 'dusk':
+        return '🌆';
+      case 'night':
+        return '🌙';
+    }
+  };
   
   return (
     <div className="p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 space-y-4">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {/* Money */}
         <div className="space-y-2">
           <div className="flex items-center gap-2">
@@ -17,6 +32,17 @@ export const PlayerStatsPanel = () => {
             <span className="font-semibold">Money</span>
           </div>
           <p className="text-xl font-bold text-game-success">{formatMoney(state.money)}</p>
+        </div>
+
+        {/* Time */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Clock className="w-5 h-5 text-primary" />
+            <span className="font-semibold">Time</span>
+          </div>
+          <p className="text-xl">
+            {getTimeIcon()} Day {state.dayCount}
+          </p>
         </div>
 
         {/* Wanted Level */}
