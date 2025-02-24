@@ -1,9 +1,8 @@
-
 import { City, Drug, Vehicle } from "../types/game";
 
 export const INITIAL_MONEY = 10000;
 export const MAX_HEAT = 100;
-export const BASE_TRAVEL_SPEED = 100; // Base speed units per second
+export const BASE_TRAVEL_SPEED = 20; // Reduced from 100 to make travel times longer
 
 export const VEHICLES: Vehicle[] = [
   {

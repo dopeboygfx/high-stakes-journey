@@ -36,14 +36,14 @@ export const TravelOptions = () => {
     const travelTime = calculateTravelTime(distance);
     
     dispatch({ type: "SET_TRAVELING", isTraveling: true });
-    toast.loading(`Traveling... (${Math.round(travelTime / 1000)}s)`, {
-      duration: travelTime,
-    });
 
+    const toastId = toast.loading(`Traveling... (${Math.round(travelTime / 1000)}s)`);
+    
     await new Promise(resolve => setTimeout(resolve, travelTime));
     
     dispatch({ type: "TRAVEL_TO_CITY", cityId });
     dispatch({ type: "SET_TRAVELING", isTraveling: false });
+    toast.dismiss(toastId);
     
     if (Math.random() < state.heat / 200) {
       dispatch({ type: "GAME_OVER" });
