@@ -37,6 +37,21 @@ export type GameEvent = {
   effect: number;
 };
 
+export type Reputation = {
+  cityId: string;
+  level: number; // -100 to 100
+};
+
+export type Ability = {
+  id: string;
+  name: string;
+  description: string;
+  cost: number;
+  effect: 'PRICE_DISCOUNT' | 'HEAT_REDUCTION' | 'TRAVEL_SPEED' | 'INVENTORY_SIZE';
+  magnitude: number;
+  unlocked: boolean;
+};
+
 export type GameState = {
   money: number;
   currentCity: string;
@@ -46,4 +61,6 @@ export type GameState = {
   currentVehicle: string;
   isTraveling: boolean;
   lastEvent?: GameEvent;
+  reputations: Reputation[];
+  abilities: Ability[];
 };

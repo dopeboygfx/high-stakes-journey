@@ -8,6 +8,7 @@ import { MarketPlace } from "../components/game/MarketPlace";
 import { TravelOptions } from "../components/game/TravelOptions";
 import { VehicleDisplay } from "../components/game/VehicleDisplay";
 import { Inventory } from "../components/game/Inventory";
+import { AbilitiesPanel } from "../components/game/AbilitiesPanel";
 import { GameOver } from "../components/game/GameOver";
 
 const Index = () => {
@@ -32,7 +33,10 @@ const Index = () => {
           <VehicleDisplay />
           <TravelOptions />
         </div>
-        <Inventory />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <Inventory />
+          <AbilitiesPanel />
+        </div>
       </div>
     </div>
   );
