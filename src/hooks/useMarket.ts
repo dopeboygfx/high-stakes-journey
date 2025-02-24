@@ -31,12 +31,12 @@ export const useMarket = (cityId: string) => {
           EventIcon = AlertTriangle;
         }
         
-        toast.info((
+        toast.info(
           <div className="flex items-center gap-2">
             <EventIcon className="w-4 h-4" />
             <span>{event.description}</span>
           </div>
-        ));
+        );
       }
     }, 30000);
 
