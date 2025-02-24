@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { ArrowUp, ArrowDown, Pill, Cannabis, FlaskConical, Wine, Candy, Shield, AlertTriangle, TrendingDown, TrendingUp } from "lucide-react";
@@ -5,6 +6,7 @@ import { useGame } from "../../context/GameContext";
 import { CITIES, DRUGS } from "../../constants/gameData";
 import { formatMoney, calculateCityPrice } from "../../utils/gameUtils";
 import { MarketEvent } from "../../types/game";
+import { MarketEvents } from "./MarketEvents";
 
 const MARKET_EVENTS: MarketEvent[] = [
   {
@@ -13,7 +15,7 @@ const MARKET_EVENTS: MarketEvent[] = [
     description: "Market crash! Prices are dropping drastically!",
     affectedDrugs: DRUGS.map(d => d.id),
     multiplier: 0.5,
-    duration: 60000, // 1 minute
+    duration: 60000,
   },
   {
     id: "drug_shortage",
@@ -21,7 +23,7 @@ const MARKET_EVENTS: MarketEvent[] = [
     description: "Supply shortage! Prices are skyrocketing!",
     affectedDrugs: [DRUGS[Math.floor(Math.random() * DRUGS.length)].id],
     multiplier: 2.0,
-    duration: 45000, // 45 seconds
+    duration: 45000,
   },
   {
     id: "local_surplus",
@@ -29,11 +31,10 @@ const MARKET_EVENTS: MarketEvent[] = [
     description: "Local surplus! Great deals available!",
     affectedDrugs: [DRUGS[Math.floor(Math.random() * DRUGS.length)].id],
     multiplier: 0.7,
-    duration: 30000, // 30 seconds
+    duration: 30000,
   },
 ];
 
-// Map drug IDs to their corresponding icons
 const drugIcons: Record<string, any> = {
   weed: Cannabis,
   cocaine: Pill,
@@ -47,7 +48,30 @@ export const MarketPlace = () => {
   const currentCity = CITIES.find((city) => city.id === state.currentCity)!;
   const [cityPrices, setCityPrices] = useState<Record<string, number>>({});
 
-  const calculateFinalPrice = (basePrice: number, drugId: string) => {
+  // Generate random market events
+  useEffect(() => {
+    const eventInterval = setInterval(() => {
+      if (Math.random() < 0.2) {
+        const event = MARKET_EVENTS[Math.floor(Math.random() * MARKET_EVENTS.length)];
+        dispatch({ type: "ADD_MARKET_EVENT", event: { ...event } });
+        
+        const EventIcon = event.type === "crash" ? TrendingDown : 
+                         event.type === "shortage" ? TrendingUp : 
+                         AlertTriangle;
+        
+        toast.info(
+          <div className="flex items-center gap-2">
+            <EventIcon className="w-4 h-4" />
+            <span>{event.description}</span>
+          </div>
+        );
+      }
+    }, 30000);
+
+    return () => clearInterval(eventInterval);
+  }, [dispatch]);
+
+  const calculateFinalPrice = useCallback((basePrice: number, drugId: string) => {
     let finalMultiplier = 1;
     
     // Apply market events
@@ -70,9 +94,9 @@ export const MarketPlace = () => {
     }
     
     return Math.round(basePrice * finalMultiplier);
-  };
+  }, [currentCity.id, state.abilities, state.activeMarketEvents, state.reputations]);
 
-  const initializePrices = useCallback(() => {
+  useEffect(() => {
     const newPrices: Record<string, number> = {};
     currentCity.availableDrugs.forEach((drug) => {
       const basePrice = calculateCityPrice(
@@ -83,39 +107,7 @@ export const MarketPlace = () => {
       newPrices[drug.id] = calculateFinalPrice(basePrice, drug.id);
     });
     setCityPrices(newPrices);
-  }, [currentCity, state.activeMarketEvents, state.reputations]);
-
-  // Generate random market events
-  useEffect(() => {
-    const eventInterval = setInterval(() => {
-      if (Math.random() < 0.2) { // 20% chance every interval
-        const event = MARKET_EVENTS[Math.floor(Math.random() * MARKET_EVENTS.length)];
-        dispatch({ type: "ADD_MARKET_EVENT", event: { ...event } });
-        
-        const EventIcon = event.type === "crash" ? TrendingDown : 
-                         event.type === "shortage" ? TrendingUp : 
-                         AlertTriangle;
-        
-        toast.info(
-          <div className="flex items-center gap-2">
-            <EventIcon className="w-4 h-4" />
-            <span>{event.description}</span>
-          </div>
-        );
-        
-        // Remove event after duration
-        setTimeout(() => {
-          dispatch({ type: "REMOVE_MARKET_EVENT", eventId: event.id });
-        }, event.duration);
-      }
-    }, 30000); // Check every 30 seconds
-
-    return () => clearInterval(eventInterval);
-  }, [dispatch]);
-
-  useEffect(() => {
-    initializePrices();
-  }, [currentCity.id, initializePrices, state.activeMarketEvents]);
+  }, [currentCity, calculateFinalPrice]);
 
   const handleBuyDrug = (drugId: string, quantity: number = 1) => {
     const price = cityPrices[drugId];
@@ -146,7 +138,6 @@ export const MarketPlace = () => {
     dispatch({ type: "BUY_DRUG", drugId, quantity: actualQuantity, cost: totalCost });
     toast.success(`Bought ${actualQuantity} units!`);
 
-    // Increase heat based on quantity
     if (actualQuantity > 10) {
       dispatch({ type: "INCREASE_HEAT" });
     }
@@ -163,7 +154,6 @@ export const MarketPlace = () => {
     const price = cityPrices[drugId];
     const totalProfit = price * actualQuantity;
     
-    // Police risk during sale
     if (Math.random() < state.heat / 150) {
       toast.error("Suspicious activity reported!");
       dispatch({ type: "INCREASE_HEAT" });
@@ -172,7 +162,6 @@ export const MarketPlace = () => {
     dispatch({ type: "SELL_DRUG", drugId, quantity: actualQuantity, profit: totalProfit });
     toast.success(`Sold ${actualQuantity} units!`);
 
-    // Reduce heat if selling small quantities
     if (actualQuantity <= 5 && state.heat > 0) {
       dispatch({ type: "REDUCE_HEAT" });
     }
@@ -185,21 +174,16 @@ export const MarketPlace = () => {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-semibold">Market</h2>
-        <div className="flex items-center gap-4">
-          {state.activeMarketEvents.length > 0 && (
-            <div className="flex items-center gap-2 text-warning">
-              <AlertTriangle className="w-5 h-5" />
-              <span className="text-sm font-medium">Market Events Active</span>
-            </div>
-          )}
-          {isHighRisk && (
-            <div className="flex items-center gap-2 text-game-risk">
-              <Shield className="w-5 h-5" />
-              <span className="text-sm font-medium">High Police Activity</span>
-            </div>
-          )}
-        </div>
+        {isHighRisk && (
+          <div className="flex items-center gap-2 text-game-risk">
+            <Shield className="w-5 h-5" />
+            <span className="text-sm font-medium">High Police Activity</span>
+          </div>
+        )}
       </div>
+
+      <MarketEvents />
+
       <div className="grid gap-4">
         {currentCity.availableDrugs.map((drug) => {
           const DrugIcon = drugIcons[drug.id];
