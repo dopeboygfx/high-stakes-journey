@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useCallback } from "react";
 import { useGame } from "../context/GameContext";
 import { CITIES, DRUGS } from "../constants/gameData";
@@ -73,7 +74,10 @@ const Index = () => {
       return;
     }
     dispatch({ type: "TRAVEL_TO_CITY", cityId });
-    if (Math.random() < state.heat / 100) {
+    
+    // Make it harder to get caught by reducing the probability
+    // Now the chance of getting caught is heat/200 (e.g., 50% heat = 25% chance)
+    if (Math.random() < state.heat / 200) {
       dispatch({ type: "GAME_OVER" });
     }
   };
