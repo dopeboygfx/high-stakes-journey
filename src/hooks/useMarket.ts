@@ -22,16 +22,16 @@ export const useMarket = (cityId: string) => {
         const event = MARKET_EVENTS[Math.floor(Math.random() * MARKET_EVENTS.length)];
         dispatch({ type: "ADD_MARKET_EVENT", event: { ...event } });
         
-        const EventIcon = event.type === "crash" ? TrendingDown : 
-                         event.type === "shortage" ? TrendingUp : 
-                         AlertTriangle;
+        const EventIcon = event.type === "crash" ? TrendingDown 
+          : event.type === "shortage" ? TrendingUp 
+          : AlertTriangle;
         
-        toast.info(
+        toast.info((
           <div className="flex items-center gap-2">
             <EventIcon className="w-4 h-4" />
             <span>{event.description}</span>
           </div>
-        );
+        ));
       }
     }, 30000);
 
