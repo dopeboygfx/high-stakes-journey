@@ -59,7 +59,5 @@ export const initialState: GameState = {
   wantedLevel: 0,
   bribeAttempts: 0,
   activeMarketEvents: [],
-  cities: CITIES,
-  timeOfDay: 'day',
-  dayCount: 1
+  cities: CITIES, // Added this line
 };

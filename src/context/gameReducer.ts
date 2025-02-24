@@ -1,7 +1,6 @@
-import { GameState, GameAction, TimeOfDay } from "../types/game";
-import { CITIES, VEHICLES } from "../constants/gameData";
 
-const TIME_SEGMENTS: TimeOfDay[] = ['dawn', 'day', 'dusk', 'night'];
+import { GameState, GameAction } from "../types/game";
+import { CITIES, VEHICLES } from "../constants/gameData";
 
 export const gameReducer = (state: GameState, action: GameAction): GameState => {
   switch (action.type) {
@@ -152,19 +151,7 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
       return {
         ...state,
         gameOver: true,
-        finalScore: state.money + (state.abilities.filter(a => a.unlocked).length * 5000),
       };
-    case "ADVANCE_TIME": {
-      const currentIndex = TIME_SEGMENTS.indexOf(state.timeOfDay);
-      const nextTime = TIME_SEGMENTS[(currentIndex + 1) % TIME_SEGMENTS.length];
-      const newDayCount = nextTime === 'dawn' ? state.dayCount + 1 : state.dayCount;
-
-      return {
-        ...state,
-        timeOfDay: nextTime,
-        dayCount: newDayCount,
-      };
-    }
     default:
       return state;
   }

@@ -1,15 +1,13 @@
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, ReactNode } from "react";
 import { toast } from "sonner";
 import { TrendingDown, TrendingUp, AlertTriangle } from "lucide-react";
 import { useGame } from "../context/GameContext";
-import { useGameTime } from "./useGameTime";
 import { MARKET_EVENTS } from "../components/game/market/marketEvents";
 import { calculateFinalPrice } from "../utils/marketUtils";
 
 export const useMarket = (cityId: string) => {
   const { state, dispatch } = useGame();
-  const { getPriceMultiplier, getRiskMultiplier } = useGameTime();
   const [cityPrices, setCityPrices] = useState<Record<string, number>>({});
 
   const currentCity = state.currentCity === cityId;
@@ -20,8 +18,7 @@ export const useMarket = (cityId: string) => {
     if (!currentCity) return;
 
     const eventInterval = setInterval(() => {
-      const riskMultiplier = getRiskMultiplier();
-      if (Math.random() < 0.2 * riskMultiplier) {
+      if (Math.random() < 0.2) {
         const event = MARKET_EVENTS[Math.floor(Math.random() * MARKET_EVENTS.length)];
         dispatch({ type: "ADD_MARKET_EVENT", event: { ...event } });
         
@@ -32,28 +29,28 @@ export const useMarket = (cityId: string) => {
           EventIcon = TrendingUp;
         }
         
-        toast(
+        const toastContent = (
           <div className="flex items-center gap-2">
             <EventIcon className="w-4 h-4" />
             <span>{event.description}</span>
           </div>
         );
+        
+        toast.info(toastContent);
       }
     }, 30000);
 
     return () => clearInterval(eventInterval);
-  }, [currentCity, dispatch, getRiskMultiplier]);
+  }, [currentCity, dispatch]);
 
   // Update prices when relevant state changes
   useEffect(() => {
-    const timeMultiplier = getPriceMultiplier();
     const newPrices: Record<string, number> = {};
-    
     cityData.availableDrugs.forEach((drug) => {
       newPrices[drug.id] = calculateFinalPrice(
         drug.basePrice,
         drug.volatility,
-        cityData.priceMultiplier * timeMultiplier,
+        cityData.priceMultiplier,
         drug.id,
         state.activeMarketEvents,
         state.abilities,
@@ -61,16 +58,13 @@ export const useMarket = (cityId: string) => {
         state.reputations
       );
     });
-    
     setCityPrices(newPrices);
   }, [
     cityData,
     cityId,
     state.activeMarketEvents,
     state.abilities,
-    state.reputations,
-    state.timeOfDay,
-    getPriceMultiplier
+    state.reputations
   ]);
 
   const handleBuyDrug = useCallback((drugId: string, quantity: number = 1) => {
@@ -136,7 +130,7 @@ export const useMarket = (cityId: string) => {
 
   return {
     prices: cityPrices,
-    isHighRisk: (cityPolice?.isInvestigating || state.heat > 75),
+    isHighRisk,
     buyDrug: handleBuyDrug,
     sellDrug: handleSellDrug,
   };
