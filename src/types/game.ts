@@ -12,6 +12,18 @@ export type City = {
   description: string;
   availableDrugs: Drug[];
   priceMultiplier: number;
+  coordinates: {
+    x: number;
+    y: number;
+  };
+};
+
+export type Vehicle = {
+  id: string;
+  name: string;
+  price: number;
+  speed: number;
+  description: string;
 };
 
 export type Inventory = {
@@ -25,4 +37,6 @@ export type GameState = {
   inventory: Inventory[];
   heat: number;
   gameOver: boolean;
+  currentVehicle: string;
+  isTraveling: boolean;
 };

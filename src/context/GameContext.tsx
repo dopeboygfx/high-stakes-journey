@@ -1,12 +1,14 @@
 
 import React, { createContext, useContext, useReducer } from "react";
 import { GameState } from "../types/game";
-import { INITIAL_MONEY, CITIES } from "../constants/gameData";
+import { INITIAL_MONEY, CITIES, VEHICLES } from "../constants/gameData";
 
 type GameAction =
   | { type: "BUY_DRUG"; drugId: string; quantity: number; cost: number }
   | { type: "SELL_DRUG"; drugId: string; quantity: number; profit: number }
   | { type: "TRAVEL_TO_CITY"; cityId: string }
+  | { type: "SET_TRAVELING"; isTraveling: boolean }
+  | { type: "BUY_VEHICLE"; vehicleId: string }
   | { type: "INCREASE_HEAT" }
   | { type: "GAME_OVER" };
 
@@ -16,6 +18,8 @@ const initialState: GameState = {
   inventory: [],
   heat: 0,
   gameOver: false,
+  currentVehicle: "feet",
+  isTraveling: false,
 };
 
 const gameReducer = (state: GameState, action: GameAction): GameState => {
@@ -47,7 +51,6 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         ...state,
         money: state.money + action.profit,
         inventory: newInventory,
-        // Reset heat if inventory becomes empty
         heat: newInventory.length === 0 ? 0 : state.heat,
       };
     }
@@ -55,11 +58,23 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       return {
         ...state,
         currentCity: action.cityId,
-        // Only increase heat if carrying drugs
         heat: state.inventory.length > 0 
           ? Math.min(state.heat + 10, 100)
           : state.heat,
       };
+    case "SET_TRAVELING":
+      return {
+        ...state,
+        isTraveling: action.isTraveling,
+      };
+    case "BUY_VEHICLE": {
+      const vehicle = VEHICLES.find(v => v.id === action.vehicleId)!;
+      return {
+        ...state,
+        money: state.money - vehicle.price,
+        currentVehicle: action.vehicleId,
+      };
+    }
     case "INCREASE_HEAT":
       return {
         ...state,
