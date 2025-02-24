@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import { useGame } from "../context/GameContext";
 import { CITIES } from "../constants/gameData";
-import { Package, Sword, Shield, Potion } from "lucide-react";
+import { Package, Sword, Shield, Flask } from "lucide-react";
 
 const Market = () => {
   const { state } = useGame();
@@ -27,7 +27,7 @@ const Market = () => {
     {
       name: "Consumables",
       description: "Coming soon - One-time use items",
-      icon: Potion,
+      icon: Flask,
     },
   ];
 
