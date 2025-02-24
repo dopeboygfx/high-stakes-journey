@@ -34,18 +34,23 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
           },
         ],
       };
-    case "SELL_DRUG":
+    case "SELL_DRUG": {
+      const newInventory = state.inventory
+        .map((item) =>
+          item.drugId === action.drugId
+            ? { ...item, quantity: item.quantity - action.quantity }
+            : item
+        )
+        .filter((item) => item.quantity > 0);
+      
       return {
         ...state,
         money: state.money + action.profit,
-        inventory: state.inventory
-          .map((item) =>
-            item.drugId === action.drugId
-              ? { ...item, quantity: item.quantity - action.quantity }
-              : item
-          )
-          .filter((item) => item.quantity > 0),
+        inventory: newInventory,
+        // Reset heat if inventory becomes empty
+        heat: newInventory.length === 0 ? 0 : state.heat,
       };
+    }
     case "TRAVEL_TO_CITY":
       return {
         ...state,
