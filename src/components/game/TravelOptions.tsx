@@ -1,8 +1,9 @@
 
-import { Truck, Pill, Cannabis, FlaskConical, Wine, Candy } from "lucide-react";
+import { Truck, Pill, Cannabis, FlaskConical, Wine, Candy, Shield, AlertTriangle, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useGame } from "../../context/GameContext";
 import { CITIES, VEHICLES, BASE_TRAVEL_SPEED } from "../../constants/gameData";
+import { GameEvent } from "../../types/game";
 
 const drugIcons: Record<string, any> = {
   weed: Cannabis,
@@ -10,6 +11,32 @@ const drugIcons: Record<string, any> = {
   lsd: FlaskConical,
   shrooms: Wine,
   ecstasy: Candy,
+};
+
+const generateRandomEvent = (heat: number): GameEvent | null => {
+  const random = Math.random();
+  
+  if (random < heat / 200) {
+    return {
+      type: 'police',
+      description: 'Police checkpoint ahead! They seem to be searching vehicles...',
+      effect: -Math.floor(Math.random() * 1000) - 500 // Fine between $500-$1500
+    };
+  } else if (random < 0.15) {
+    return {
+      type: 'dealer',
+      description: 'You met a friendly dealer who shared some market insights!',
+      effect: Math.floor(Math.random() * 800) + 200 // Bonus $200-$1000
+    };
+  } else if (random < 0.25) {
+    return {
+      type: 'lucky',
+      description: 'You found a shortcut!',
+      effect: 0 // Speed bonus handled in travel time calculation
+    };
+  }
+  
+  return null;
 };
 
 export const TravelOptions = () => {
@@ -24,9 +51,10 @@ export const TravelOptions = () => {
     return Math.sqrt(dx * dx + dy * dy);
   };
 
-  const calculateTravelTime = (distance: number) => {
+  const calculateTravelTime = (distance: number, event?: GameEvent | null) => {
     const vehicle = VEHICLES.find(v => v.id === state.currentVehicle)!;
-    return Math.round(distance / (BASE_TRAVEL_SPEED * vehicle.speed) * 1000);
+    const speedModifier = event?.type === 'lucky' ? 1.2 : 1;
+    return Math.round(distance / (BASE_TRAVEL_SPEED * vehicle.speed * speedModifier) * 1000);
   };
 
   const handleTravel = async (cityId: string) => {
@@ -40,10 +68,34 @@ export const TravelOptions = () => {
       return;
     }
 
+    const event = generateRandomEvent(state.heat);
     const distance = calculateDistance(state.currentCity, cityId);
-    const travelTime = calculateTravelTime(distance);
+    const travelTime = calculateTravelTime(distance, event);
     
     dispatch({ type: "SET_TRAVELING", isTraveling: true });
+
+    if (event) {
+      const EventIcon = event.type === 'police' ? Shield : 
+                       event.type === 'dealer' ? AlertTriangle : 
+                       Sparkles;
+      
+      toast.info(
+        <div className="flex items-center gap-2">
+          <EventIcon className="w-4 h-4" />
+          <span>{event.description}</span>
+        </div>
+      );
+
+      if (event.effect !== 0) {
+        if (event.effect > 0) {
+          dispatch({ type: "ADD_MONEY", amount: event.effect });
+          toast.success(`You gained $${event.effect}!`);
+        } else {
+          dispatch({ type: "REMOVE_MONEY", amount: Math.abs(event.effect) });
+          toast.error(`You lost $${Math.abs(event.effect)}!`);
+        }
+      }
+    }
 
     const toastId = toast.loading(`Traveling... (${Math.round(travelTime / 1000)}s)`);
     
@@ -55,6 +107,7 @@ export const TravelOptions = () => {
     
     if (Math.random() < state.heat / 200) {
       dispatch({ type: "GAME_OVER" });
+      toast.error("You got caught by the police!");
     }
   };
 

@@ -31,6 +31,12 @@ export type Inventory = {
   quantity: number;
 };
 
+export type GameEvent = {
+  type: 'police' | 'dealer' | 'lucky';
+  description: string;
+  effect: number;
+};
+
 export type GameState = {
   money: number;
   currentCity: string;
@@ -39,4 +45,5 @@ export type GameState = {
   gameOver: boolean;
   currentVehicle: string;
   isTraveling: boolean;
+  lastEvent?: GameEvent;
 };

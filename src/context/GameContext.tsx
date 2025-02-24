@@ -10,6 +10,8 @@ type GameAction =
   | { type: "SET_TRAVELING"; isTraveling: boolean }
   | { type: "BUY_VEHICLE"; vehicleId: string }
   | { type: "INCREASE_HEAT" }
+  | { type: "ADD_MONEY"; amount: number }
+  | { type: "REMOVE_MONEY"; amount: number }
   | { type: "GAME_OVER" };
 
 const initialState: GameState = {
@@ -79,6 +81,16 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       return {
         ...state,
         heat: Math.min(state.heat + 10, 100),
+      };
+    case "ADD_MONEY":
+      return {
+        ...state,
+        money: state.money + action.amount,
+      };
+    case "REMOVE_MONEY":
+      return {
+        ...state,
+        money: Math.max(0, state.money - action.amount),
       };
     case "GAME_OVER":
       return {
