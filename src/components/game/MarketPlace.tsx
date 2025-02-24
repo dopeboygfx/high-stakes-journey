@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown, Pill, Cannabis, FlaskConical, Wine, Candy } from "lucide-react";
+import { ArrowUp, ArrowDown, Pill, Cannabis, FlaskConical, Wine, Candy, Shield, AlertTriangle } from "lucide-react";
 import { useGame } from "../../context/GameContext";
 import { CITIES, DRUGS } from "../../constants/gameData";
 import { formatMoney, calculateCityPrice } from "../../utils/gameUtils";
@@ -48,8 +48,23 @@ export const MarketPlace = () => {
       return;
     }
     
+    // Police risk check
+    if (Math.random() < state.heat / 200) {
+      const policeChance = Math.random();
+      if (policeChance < 0.3) {
+        toast.error("Police raid! You lost the drugs and some money!");
+        dispatch({ type: "REMOVE_MONEY", amount: totalCost / 2 });
+        return;
+      }
+    }
+    
     dispatch({ type: "BUY_DRUG", drugId, quantity: actualQuantity, cost: totalCost });
     toast.success(`Bought ${actualQuantity} units!`);
+
+    // Increase heat based on quantity
+    if (actualQuantity > 10) {
+      dispatch({ type: "INCREASE_HEAT" });
+    }
   };
 
   const handleSellDrug = (drugId: string, quantity: number = 1) => {
@@ -63,13 +78,35 @@ export const MarketPlace = () => {
     const price = cityPrices[drugId];
     const totalProfit = price * actualQuantity;
     
+    // Police risk during sale
+    if (Math.random() < state.heat / 150) {
+      toast.error("Suspicious activity reported!");
+      dispatch({ type: "INCREASE_HEAT" });
+    }
+    
     dispatch({ type: "SELL_DRUG", drugId, quantity: actualQuantity, profit: totalProfit });
     toast.success(`Sold ${actualQuantity} units!`);
+
+    // Reduce heat if selling small quantities
+    if (actualQuantity <= 5 && state.heat > 0) {
+      dispatch({ type: "REDUCE_HEAT" });
+    }
   };
+
+  const cityPolice = state.policeActivity.find(p => p.cityId === currentCity.id);
+  const isHighRisk = cityPolice?.isInvestigating || state.heat > 75;
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-semibold">Market</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-semibold">Market</h2>
+        {isHighRisk && (
+          <div className="flex items-center gap-2 text-game-risk">
+            <Shield className="w-5 h-5" />
+            <span className="text-sm font-medium">High Police Activity</span>
+          </div>
+        )}
+      </div>
       <div className="grid gap-4">
         {currentCity.availableDrugs.map((drug) => {
           const DrugIcon = drugIcons[drug.id];

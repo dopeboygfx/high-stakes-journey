@@ -48,10 +48,13 @@ type GameAction =
   | { type: "SET_TRAVELING"; isTraveling: boolean }
   | { type: "BUY_VEHICLE"; vehicleId: string }
   | { type: "INCREASE_HEAT" }
+  | { type: "REDUCE_HEAT" }
   | { type: "ADD_MONEY"; amount: number }
   | { type: "REMOVE_MONEY"; amount: number }
   | { type: "UNLOCK_ABILITY"; abilityId: string }
   | { type: "UPDATE_REPUTATION"; cityId: string; amount: number }
+  | { type: "UPDATE_POLICE_ACTIVITY"; cityId: string }
+  | { type: "ATTEMPT_BRIBE"; amount: number }
   | { type: "GAME_OVER" };
 
 const initialState: GameState = {
@@ -64,6 +67,13 @@ const initialState: GameState = {
   isTraveling: false,
   reputations: CITIES.map(city => ({ cityId: city.id, level: 0 })),
   abilities: INITIAL_ABILITIES,
+  policeActivity: CITIES.map(city => ({
+    cityId: city.id,
+    level: 0,
+    isInvestigating: false
+  })),
+  wantedLevel: 0,
+  bribeAttempts: 0,
 };
 
 const gameReducer = (state: GameState, action: GameAction): GameState => {
@@ -132,6 +142,12 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       return {
         ...state,
         heat: Math.min(state.heat + 10, 100),
+        wantedLevel: state.heat >= 90 ? Math.min(state.wantedLevel + 1, 5) : state.wantedLevel,
+      };
+    case "REDUCE_HEAT":
+      return {
+        ...state,
+        heat: Math.max(0, state.heat - 5),
       };
     case "ADD_MONEY":
       return {
@@ -167,6 +183,29 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
             : rep
         ),
       };
+    case "UPDATE_POLICE_ACTIVITY":
+      return {
+        ...state,
+        policeActivity: state.policeActivity.map(activity =>
+          activity.cityId === action.cityId
+            ? {
+                ...activity,
+                level: Math.min(activity.level + 10, 100),
+                isInvestigating: activity.level >= 80,
+              }
+            : activity
+        ),
+      };
+    case "ATTEMPT_BRIBE": {
+      const success = Math.random() < 0.6 - (state.bribeAttempts * 0.1);
+      return {
+        ...state,
+        money: state.money - action.amount,
+        heat: success ? Math.max(0, state.heat - 30) : state.heat + 20,
+        bribeAttempts: state.bribeAttempts + 1,
+        wantedLevel: success ? Math.max(0, state.wantedLevel - 1) : state.wantedLevel,
+      };
+    }
     case "GAME_OVER":
       return {
         ...state,

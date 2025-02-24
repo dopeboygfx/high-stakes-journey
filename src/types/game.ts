@@ -1,4 +1,3 @@
-
 export type Drug = {
   id: string;
   name: string;
@@ -37,6 +36,12 @@ export type GameEvent = {
   effect: number;
 };
 
+export type PoliceActivity = {
+  cityId: string;
+  level: number; // 0-100
+  isInvestigating: boolean;
+};
+
 export type Reputation = {
   cityId: string;
   level: number; // -100 to 100
@@ -63,4 +68,7 @@ export type GameState = {
   lastEvent?: GameEvent;
   reputations: Reputation[];
   abilities: Ability[];
+  policeActivity: PoliceActivity[];
+  wantedLevel: number; // 0-5 stars
+  bribeAttempts: number;
 };
