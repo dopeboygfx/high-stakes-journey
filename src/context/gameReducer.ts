@@ -1,3 +1,4 @@
+
 import { GameState, GameAction } from "../types/game";
 import { CITIES, VEHICLES } from "../constants/gameData";
 
@@ -131,11 +132,6 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
         wantedLevel: success ? Math.max(0, state.wantedLevel - 1) : state.wantedLevel,
       };
     }
-    case "GAME_OVER":
-      return {
-        ...state,
-        gameOver: true,
-      };
     case "ADD_MARKET_EVENT":
       return {
         ...state,
@@ -150,6 +146,11 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
         activeMarketEvents: state.activeMarketEvents.filter(
           event => event.id !== action.eventId
         ),
+      };
+    case "GAME_OVER":
+      return {
+        ...state,
+        gameOver: true,
       };
     default:
       return state;
