@@ -1,9 +1,8 @@
-
 import { useEffect, useState, useCallback } from "react";
 import { useGame } from "../context/GameContext";
 import { CITIES, DRUGS } from "../constants/gameData";
 import { toast } from "sonner";
-import { AlertCircle, DollarSign, MapPin, Truck } from "lucide-react";
+import { AlertCircle, DollarSign, MapPin, Truck, ArrowUp, ArrowDown } from "lucide-react";
 
 const formatMoney = (amount: number) =>
   new Intl.NumberFormat("en-US", {
@@ -21,7 +20,6 @@ const Index = () => {
     return Math.round(basePrice * currentCity.priceMultiplier * randomFactor);
   }, [currentCity.priceMultiplier]);
 
-  // Initialize or update prices when traveling to a new city
   const initializePrices = useCallback(() => {
     const newPrices: Record<string, number> = {};
     currentCity.availableDrugs.forEach((drug) => {
@@ -30,30 +28,43 @@ const Index = () => {
     setCityPrices(newPrices);
   }, [currentCity.availableDrugs, calculatePrice]);
 
-  // Initialize prices on first render and when changing cities
   useEffect(() => {
     initializePrices();
   }, [currentCity.id, initializePrices]);
 
-  const handleBuyDrug = (drugId: string) => {
+  const handleBuyDrug = (drugId: string, quantity: number = 1) => {
     const price = cityPrices[drugId];
-    if (state.money < price) {
+    const maxAffordable = Math.floor(state.money / price);
+    const actualQuantity = quantity === -1 ? maxAffordable : quantity;
+
+    if (actualQuantity <= 0) {
       toast.error("Not enough money!");
       return;
     }
-    dispatch({ type: "BUY_DRUG", drugId, quantity: 1, cost: price });
-    toast.success("Purchase successful!");
+    
+    const totalCost = price * actualQuantity;
+    if (state.money < totalCost) {
+      toast.error("Not enough money!");
+      return;
+    }
+    
+    dispatch({ type: "BUY_DRUG", drugId, quantity: actualQuantity, cost: totalCost });
+    toast.success(`Bought ${actualQuantity} units!`);
   };
 
-  const handleSellDrug = (drugId: string) => {
+  const handleSellDrug = (drugId: string, quantity: number = 1) => {
     const inventory = state.inventory.find((item) => item.drugId === drugId);
     if (!inventory || inventory.quantity === 0) {
       toast.error("No inventory to sell!");
       return;
     }
+
+    const actualQuantity = quantity === -1 ? inventory.quantity : Math.min(quantity, inventory.quantity);
     const price = cityPrices[drugId];
-    dispatch({ type: "SELL_DRUG", drugId, quantity: 1, profit: price });
-    toast.success("Sale successful!");
+    const totalProfit = price * actualQuantity;
+    
+    dispatch({ type: "SELL_DRUG", drugId, quantity: actualQuantity, profit: totalProfit });
+    toast.success(`Sold ${actualQuantity} units!`);
   };
 
   const handleTravel = (cityId: string) => {
@@ -139,19 +150,37 @@ const Index = () => {
                         Price: {formatMoney(cityPrices[drug.id] || 0)}
                       </p>
                     </div>
-                    <div className="space-x-2">
-                      <button
-                        onClick={() => handleBuyDrug(drug.id)}
-                        className="px-3 py-1 bg-game-success text-white rounded hover:opacity-90 transition-opacity"
-                      >
-                        Buy
-                      </button>
-                      <button
-                        onClick={() => handleSellDrug(drug.id)}
-                        className="px-3 py-1 bg-game-risk text-white rounded hover:opacity-90 transition-opacity"
-                      >
-                        Sell
-                      </button>
+                    <div className="flex items-center space-x-2">
+                      <div className="flex flex-col space-y-1">
+                        <button
+                          onClick={() => handleBuyDrug(drug.id)}
+                          className="px-3 py-1 bg-game-success text-white rounded hover:opacity-90 transition-opacity"
+                        >
+                          Buy
+                        </button>
+                        <button
+                          onClick={() => handleBuyDrug(drug.id, -1)}
+                          className="px-3 py-1 bg-game-success/80 text-white rounded hover:opacity-90 transition-opacity flex items-center justify-center gap-1"
+                          title="Buy Maximum Affordable Amount"
+                        >
+                          Max <ArrowUp className="w-3 h-3" />
+                        </button>
+                      </div>
+                      <div className="flex flex-col space-y-1">
+                        <button
+                          onClick={() => handleSellDrug(drug.id)}
+                          className="px-3 py-1 bg-game-risk text-white rounded hover:opacity-90 transition-opacity"
+                        >
+                          Sell
+                        </button>
+                        <button
+                          onClick={() => handleSellDrug(drug.id, -1)}
+                          className="px-3 py-1 bg-game-risk/80 text-white rounded hover:opacity-90 transition-opacity flex items-center justify-center gap-1"
+                          title="Sell All Units"
+                        >
+                          Max <ArrowDown className="w-3 h-3" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
