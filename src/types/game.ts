@@ -1,4 +1,3 @@
-
 export type Drug = {
   id: string;
   name: string;
@@ -58,6 +57,16 @@ export type Ability = {
   unlocked: boolean;
 };
 
+export type MarketEvent = {
+  id: string;
+  type: 'crash' | 'boom' | 'shortage' | 'surplus';
+  description: string;
+  affectedDrugs: string[];
+  multiplier: number;
+  duration: number; // in milliseconds
+  startTime?: number;
+};
+
 export type GameState = {
   money: number;
   currentCity: string;
@@ -72,6 +81,7 @@ export type GameState = {
   policeActivity: PoliceActivity[];
   wantedLevel: number; // 0-5 stars
   bribeAttempts: number;
+  activeMarketEvents: MarketEvent[];
 };
 
 export type GameAction =
@@ -88,4 +98,6 @@ export type GameAction =
   | { type: "UPDATE_REPUTATION"; cityId: string; amount: number }
   | { type: "UPDATE_POLICE_ACTIVITY"; cityId: string }
   | { type: "ATTEMPT_BRIBE"; amount: number }
+  | { type: "ADD_MARKET_EVENT"; event: MarketEvent }
+  | { type: "REMOVE_MARKET_EVENT"; eventId: string }
   | { type: "GAME_OVER" };

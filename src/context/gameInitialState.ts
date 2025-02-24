@@ -58,4 +58,5 @@ export const initialState: GameState = {
   })),
   wantedLevel: 0,
   bribeAttempts: 0,
+  activeMarketEvents: [],
 };

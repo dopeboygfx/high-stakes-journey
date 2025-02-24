@@ -1,10 +1,37 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-import { ArrowUp, ArrowDown, Pill, Cannabis, FlaskConical, Wine, Candy, Shield, AlertTriangle } from "lucide-react";
+import { ArrowUp, ArrowDown, Pill, Cannabis, FlaskConical, Wine, Candy, Shield, AlertTriangle, TrendingDown, TrendingUp } from "lucide-react";
 import { useGame } from "../../context/GameContext";
 import { CITIES, DRUGS } from "../../constants/gameData";
 import { formatMoney, calculateCityPrice } from "../../utils/gameUtils";
+import { MarketEvent } from "../../types/game";
+
+const MARKET_EVENTS: MarketEvent[] = [
+  {
+    id: "market_crash",
+    type: "crash",
+    description: "Market crash! Prices are dropping drastically!",
+    affectedDrugs: DRUGS.map(d => d.id),
+    multiplier: 0.5,
+    duration: 60000, // 1 minute
+  },
+  {
+    id: "drug_shortage",
+    type: "shortage",
+    description: "Supply shortage! Prices are skyrocketing!",
+    affectedDrugs: [DRUGS[Math.floor(Math.random() * DRUGS.length)].id],
+    multiplier: 2.0,
+    duration: 45000, // 45 seconds
+  },
+  {
+    id: "local_surplus",
+    type: "surplus",
+    description: "Local surplus! Great deals available!",
+    affectedDrugs: [DRUGS[Math.floor(Math.random() * DRUGS.length)].id],
+    multiplier: 0.7,
+    duration: 30000, // 30 seconds
+  },
+];
 
 // Map drug IDs to their corresponding icons
 const drugIcons: Record<string, any> = {
@@ -20,17 +47,75 @@ export const MarketPlace = () => {
   const currentCity = CITIES.find((city) => city.id === state.currentCity)!;
   const [cityPrices, setCityPrices] = useState<Record<string, number>>({});
 
+  const calculateFinalPrice = (basePrice: number, drugId: string) => {
+    let finalMultiplier = 1;
+    
+    // Apply market events
+    state.activeMarketEvents.forEach(event => {
+      if (event.affectedDrugs.includes(drugId)) {
+        finalMultiplier *= event.multiplier;
+      }
+    });
+    
+    // Apply reputation bonus if ability is unlocked
+    const hasLocalConnections = state.abilities.find(
+      a => a.id === "local_connect" && a.unlocked
+    );
+    
+    if (hasLocalConnections) {
+      const cityRep = state.reputations.find(r => r.cityId === currentCity.id);
+      if (cityRep && cityRep.level > 0) {
+        finalMultiplier *= (1 - (cityRep.level / 100) * hasLocalConnections.magnitude);
+      }
+    }
+    
+    return Math.round(basePrice * finalMultiplier);
+  };
+
   const initializePrices = useCallback(() => {
     const newPrices: Record<string, number> = {};
     currentCity.availableDrugs.forEach((drug) => {
-      newPrices[drug.id] = calculateCityPrice(drug.basePrice, drug.volatility, currentCity.priceMultiplier);
+      const basePrice = calculateCityPrice(
+        drug.basePrice,
+        drug.volatility,
+        currentCity.priceMultiplier
+      );
+      newPrices[drug.id] = calculateFinalPrice(basePrice, drug.id);
     });
     setCityPrices(newPrices);
-  }, [currentCity]);
+  }, [currentCity, state.activeMarketEvents, state.reputations]);
+
+  // Generate random market events
+  useEffect(() => {
+    const eventInterval = setInterval(() => {
+      if (Math.random() < 0.2) { // 20% chance every interval
+        const event = MARKET_EVENTS[Math.floor(Math.random() * MARKET_EVENTS.length)];
+        dispatch({ type: "ADD_MARKET_EVENT", event: { ...event } });
+        
+        const EventIcon = event.type === "crash" ? TrendingDown : 
+                         event.type === "shortage" ? TrendingUp : 
+                         AlertTriangle;
+        
+        toast.info(
+          <div className="flex items-center gap-2">
+            <EventIcon className="w-4 h-4" />
+            <span>{event.description}</span>
+          </div>
+        );
+        
+        // Remove event after duration
+        setTimeout(() => {
+          dispatch({ type: "REMOVE_MARKET_EVENT", eventId: event.id });
+        }, event.duration);
+      }
+    }, 30000); // Check every 30 seconds
+
+    return () => clearInterval(eventInterval);
+  }, [dispatch]);
 
   useEffect(() => {
     initializePrices();
-  }, [currentCity.id, initializePrices]);
+  }, [currentCity.id, initializePrices, state.activeMarketEvents]);
 
   const handleBuyDrug = (drugId: string, quantity: number = 1) => {
     const price = cityPrices[drugId];
@@ -100,16 +185,28 @@ export const MarketPlace = () => {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-semibold">Market</h2>
-        {isHighRisk && (
-          <div className="flex items-center gap-2 text-game-risk">
-            <Shield className="w-5 h-5" />
-            <span className="text-sm font-medium">High Police Activity</span>
-          </div>
-        )}
+        <div className="flex items-center gap-4">
+          {state.activeMarketEvents.length > 0 && (
+            <div className="flex items-center gap-2 text-warning">
+              <AlertTriangle className="w-5 h-5" />
+              <span className="text-sm font-medium">Market Events Active</span>
+            </div>
+          )}
+          {isHighRisk && (
+            <div className="flex items-center gap-2 text-game-risk">
+              <Shield className="w-5 h-5" />
+              <span className="text-sm font-medium">High Police Activity</span>
+            </div>
+          )}
+        </div>
       </div>
       <div className="grid gap-4">
         {currentCity.availableDrugs.map((drug) => {
           const DrugIcon = drugIcons[drug.id];
+          const affectingEvents = state.activeMarketEvents.filter(
+            event => event.affectedDrugs.includes(drug.id)
+          );
+          
           return (
             <div
               key={drug.id}
@@ -123,6 +220,11 @@ export const MarketPlace = () => {
                     <p className="text-sm text-muted-foreground">
                       Price: {formatMoney(cityPrices[drug.id] || 0)}
                     </p>
+                    {affectingEvents.length > 0 && (
+                      <p className="text-sm text-warning">
+                        Market event affecting price!
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">

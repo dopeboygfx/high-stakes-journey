@@ -1,4 +1,3 @@
-
 import { GameState, GameAction } from "../types/game";
 import { CITIES, VEHICLES } from "../constants/gameData";
 
@@ -136,6 +135,21 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
       return {
         ...state,
         gameOver: true,
+      };
+    case "ADD_MARKET_EVENT":
+      return {
+        ...state,
+        activeMarketEvents: [
+          ...state.activeMarketEvents,
+          { ...action.event, startTime: Date.now() }
+        ],
+      };
+    case "REMOVE_MARKET_EVENT":
+      return {
+        ...state,
+        activeMarketEvents: state.activeMarketEvents.filter(
+          event => event.id !== action.eventId
+        ),
       };
     default:
       return state;
