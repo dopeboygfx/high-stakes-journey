@@ -1,3 +1,4 @@
+
 export type Drug = {
   id: string;
   name: string;
@@ -72,3 +73,19 @@ export type GameState = {
   wantedLevel: number; // 0-5 stars
   bribeAttempts: number;
 };
+
+export type GameAction =
+  | { type: "BUY_DRUG"; drugId: string; quantity: number; cost: number }
+  | { type: "SELL_DRUG"; drugId: string; quantity: number; profit: number }
+  | { type: "TRAVEL_TO_CITY"; cityId: string }
+  | { type: "SET_TRAVELING"; isTraveling: boolean }
+  | { type: "BUY_VEHICLE"; vehicleId: string }
+  | { type: "INCREASE_HEAT" }
+  | { type: "REDUCE_HEAT" }
+  | { type: "ADD_MONEY"; amount: number }
+  | { type: "REMOVE_MONEY"; amount: number }
+  | { type: "UNLOCK_ABILITY"; abilityId: string }
+  | { type: "UPDATE_REPUTATION"; cityId: string; amount: number }
+  | { type: "UPDATE_POLICE_ACTIVITY"; cityId: string }
+  | { type: "ATTEMPT_BRIBE"; amount: number }
+  | { type: "GAME_OVER" };
