@@ -10,6 +10,8 @@ import { VehicleDisplay } from "../components/game/VehicleDisplay";
 import { Inventory } from "../components/game/Inventory";
 import { AbilitiesPanel } from "../components/game/AbilitiesPanel";
 import { GameOver } from "../components/game/GameOver";
+import { PlayerStatsPanel } from "../components/game/PlayerStatsPanel";
+import { Users, Dumbbell } from "lucide-react";
 
 const Index = () => {
   const { state } = useGame();
@@ -28,14 +30,37 @@ const Index = () => {
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-6xl mx-auto space-y-8">
         <GameHeader />
+        
+        <div className="flex justify-between mb-4">
+          <Link 
+            to="/explore" 
+            className="flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+          >
+            <Users className="mr-2 h-4 w-4" />
+            Explore City
+          </Link>
+          
+          <Link 
+            to="/gym" 
+            className="flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+          >
+            <Dumbbell className="mr-2 h-4 w-4" />
+            Visit Gym
+          </Link>
+        </div>
+        
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <MarketPlace />
           <VehicleDisplay />
           <TravelOptions />
         </div>
+        
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <Inventory />
-          <AbilitiesPanel />
+          <div className="space-y-8">
+            <PlayerStatsPanel />
+            <AbilitiesPanel />
+          </div>
         </div>
       </div>
     </div>

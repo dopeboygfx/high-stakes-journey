@@ -1,5 +1,5 @@
 
-import { GameState, Ability } from "../types/game";
+import { GameState, Ability, PlayerStats } from "../types/game";
 import { INITIAL_MONEY, CITIES } from "../constants/gameData";
 
 export const INITIAL_ABILITIES: Ability[] = [
@@ -41,6 +41,17 @@ export const INITIAL_ABILITIES: Ability[] = [
   },
 ];
 
+export const INITIAL_PLAYER_STATS: PlayerStats = {
+  level: 1,
+  exp: 0,
+  expToNextLevel: 100,
+  strength: 5,
+  defense: 5,
+  speed: 5,
+  energy: 10,
+  maxEnergy: 10,
+};
+
 export const initialState: GameState = {
   money: INITIAL_MONEY,
   currentCity: CITIES[0].id,
@@ -59,5 +70,7 @@ export const initialState: GameState = {
   wantedLevel: 0,
   bribeAttempts: 0,
   activeMarketEvents: [],
-  cities: CITIES, // Added this line
+  cities: CITIES,
+  playerStats: INITIAL_PLAYER_STATS,
+  onlinePlayers: [],
 };

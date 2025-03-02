@@ -68,6 +68,32 @@ export type MarketEvent = {
   startTime?: number;
 };
 
+export type PlayerStats = {
+  level: number;
+  exp: number;
+  expToNextLevel: number;
+  strength: number;
+  defense: number;
+  speed: number;
+  energy: number;
+  maxEnergy: number;
+};
+
+export type OnlinePlayer = {
+  id: string;
+  name: string;
+  cityId: string;
+  stats: PlayerStats;
+  lastActive: number;
+};
+
+export type CombatResult = {
+  winner: string;
+  expGained: number;
+  moneyGained: number;
+  description: string;
+};
+
 export type GameState = {
   money: number;
   currentCity: string;
@@ -83,7 +109,10 @@ export type GameState = {
   wantedLevel: number; // 0-5 stars
   bribeAttempts: number;
   activeMarketEvents: MarketEvent[];
-  cities: City[]; // Added this line
+  cities: City[];
+  playerStats: PlayerStats;
+  onlinePlayers: OnlinePlayer[];
+  lastCombat?: CombatResult;
 };
 
 export type GameAction =
@@ -102,4 +131,9 @@ export type GameAction =
   | { type: "ATTEMPT_BRIBE"; amount: number }
   | { type: "ADD_MARKET_EVENT"; event: MarketEvent }
   | { type: "REMOVE_MARKET_EVENT"; eventId: string }
+  | { type: "GAIN_EXP"; amount: number }
+  | { type: "TRAIN_ATTRIBUTE"; attribute: "strength" | "defense" | "speed"; amount: number }
+  | { type: "RESTORE_ENERGY"; amount: number }
+  | { type: "FIGHT_PLAYER"; targetId: string }
+  | { type: "UPDATE_ONLINE_PLAYERS"; players: OnlinePlayer[] }
   | { type: "GAME_OVER" };
