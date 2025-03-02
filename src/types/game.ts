@@ -1,8 +1,18 @@
+
 export type Drug = {
   id: string;
   name: string;
   basePrice: number;
   volatility: number;
+};
+
+export type Consumable = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  effect: 'RESTORE_AWAKE' | 'RESTORE_ENERGY' | 'BOOST_STRENGTH' | 'BOOST_DEFENSE' | 'BOOST_SPEED';
+  magnitude: number; // For awake/energy: percentage to restore. For boosts: flat amount to add
 };
 
 export type City = {
@@ -27,6 +37,11 @@ export type Vehicle = {
 
 export type Inventory = {
   drugId: string;
+  quantity: number;
+};
+
+export type ConsumableInventory = {
+  consumableId: string;
   quantity: number;
 };
 
@@ -98,6 +113,7 @@ export type GameState = {
   money: number;
   currentCity: string;
   inventory: Inventory[];
+  consumables: ConsumableInventory[];
   heat: number;
   gameOver: boolean;
   currentVehicle: string;
@@ -134,6 +150,9 @@ export type GameAction =
   | { type: "GAIN_EXP"; amount: number }
   | { type: "TRAIN_ATTRIBUTE"; attribute: "strength" | "defense" | "speed"; amount: number }
   | { type: "RESTORE_ENERGY"; amount: number }
+  | { type: "RESTORE_AWAKE"; amount: number }
+  | { type: "BUY_CONSUMABLE"; consumableId: string; quantity: number }
+  | { type: "USE_CONSUMABLE"; consumableId: string }
   | { type: "FIGHT_PLAYER"; targetId: string }
   | { type: "UPDATE_ONLINE_PLAYERS"; players: OnlinePlayer[] }
   | { type: "GAME_OVER" };

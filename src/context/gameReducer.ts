@@ -1,6 +1,6 @@
 
-import { GameState, GameAction, PlayerStats } from "../types/game";
-import { CITIES, VEHICLES } from "../constants/gameData";
+import { GameState, GameAction, PlayerStats, Consumable } from "../types/game";
+import { CITIES, VEHICLES, CONSUMABLES } from "../constants/gameData";
 
 // Calculate exp needed for next level using a simple formula
 const calculateExpToNextLevel = (level: number): number => {
@@ -56,6 +56,23 @@ const resolveCombat = (attacker: PlayerStats, defender: PlayerStats) => {
       ? `You defeated your opponent with superior ${attacker.strength > attacker.defense ? 'strength' : 'technique'}!` 
       : `You were defeated. Train harder to improve your combat skills.`
   };
+};
+
+// Calculate awake depletion based on training intensity
+const calculateAwakeDepletion = (attribute: string): number => {
+  const baseDepletion = 500; // Base amount depleted per training session
+  
+  // Different attributes might deplete awake at different rates
+  switch(attribute) {
+    case 'strength':
+      return baseDepletion * 1.2; // Strength training is most tiring
+    case 'defense':
+      return baseDepletion * 1.0; // Defense training is average
+    case 'speed':
+      return baseDepletion * 0.8; // Speed training is least tiring
+    default:
+      return baseDepletion;
+  }
 };
 
 export const gameReducer = (state: GameState, action: GameAction): GameState => {
@@ -218,17 +235,19 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
       };
     }
     case "TRAIN_ATTRIBUTE": {
-      // Not enough energy
-      if (state.playerStats.energy < 1) return state;
+      // Not enough energy or awake
+      if (state.playerStats.energy < 1 || state.playerStats.awake <= 0) return state;
       
       const energyCost = 1;
+      const awakeCost = calculateAwakeDepletion(action.attribute);
       
       return {
         ...state,
         playerStats: {
           ...state.playerStats,
           [action.attribute]: state.playerStats[action.attribute] + action.amount,
-          energy: Math.max(0, state.playerStats.energy - energyCost)
+          energy: Math.max(0, state.playerStats.energy - energyCost),
+          awake: Math.max(0, state.playerStats.awake - awakeCost)
         }
       };
     }
@@ -242,6 +261,77 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
             state.playerStats.energy + action.amount
           )
         }
+      };
+    }
+    case "RESTORE_AWAKE": {
+      return {
+        ...state,
+        playerStats: {
+          ...state.playerStats,
+          awake: Math.min(10000, state.playerStats.awake + action.amount)
+        }
+      };
+    }
+    case "BUY_CONSUMABLE": {
+      const consumable = CONSUMABLES.find(c => c.id === action.consumableId)!;
+      const totalCost = consumable.price * action.quantity;
+      
+      if (state.money < totalCost) return state;
+      
+      return {
+        ...state,
+        money: state.money - totalCost,
+        consumables: [
+          ...state.consumables.filter(item => item.consumableId !== action.consumableId),
+          {
+            consumableId: action.consumableId,
+            quantity: (state.consumables.find(item => item.consumableId === action.consumableId)?.quantity || 0) + action.quantity
+          }
+        ]
+      };
+    }
+    case "USE_CONSUMABLE": {
+      const consumable = CONSUMABLES.find(c => c.id === action.consumableId)!;
+      const consumableInventory = state.consumables.find(c => c.consumableId === action.consumableId);
+      
+      if (!consumableInventory || consumableInventory.quantity <= 0) return state;
+      
+      // Update inventory
+      const updatedConsumables = state.consumables
+        .map(item => 
+          item.consumableId === action.consumableId
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        )
+        .filter(item => item.quantity > 0);
+      
+      // Apply consumable effect
+      let updatedPlayerStats = { ...state.playerStats };
+      
+      switch(consumable.effect) {
+        case 'RESTORE_AWAKE':
+          const awakeToRestore = Math.floor(10000 * (consumable.magnitude / 100));
+          updatedPlayerStats.awake = Math.min(10000, updatedPlayerStats.awake + awakeToRestore);
+          break;
+        case 'RESTORE_ENERGY':
+          const energyToRestore = Math.floor(updatedPlayerStats.maxEnergy * (consumable.magnitude / 100));
+          updatedPlayerStats.energy = Math.min(updatedPlayerStats.maxEnergy, updatedPlayerStats.energy + energyToRestore);
+          break;
+        case 'BOOST_STRENGTH':
+          updatedPlayerStats.strength += consumable.magnitude;
+          break;
+        case 'BOOST_DEFENSE':
+          updatedPlayerStats.defense += consumable.magnitude;
+          break;
+        case 'BOOST_SPEED':
+          updatedPlayerStats.speed += consumable.magnitude;
+          break;
+      }
+      
+      return {
+        ...state,
+        consumables: updatedConsumables,
+        playerStats: updatedPlayerStats
       };
     }
     case "FIGHT_PLAYER": {
