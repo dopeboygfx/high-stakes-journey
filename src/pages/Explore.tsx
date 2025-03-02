@@ -20,7 +20,8 @@ const MOCK_ONLINE_PLAYERS = [
       defense: 6,
       speed: 7,
       energy: 10,
-      maxEnergy: 12
+      maxEnergy: 12,
+      awake: 10000
     },
     lastActive: Date.now()
   },
@@ -36,7 +37,8 @@ const MOCK_ONLINE_PLAYERS = [
       defense: 9,
       speed: 8,
       energy: 15,
-      maxEnergy: 15
+      maxEnergy: 15,
+      awake: 12000
     },
     lastActive: Date.now()
   },
@@ -52,7 +54,8 @@ const MOCK_ONLINE_PLAYERS = [
       defense: 5,
       speed: 7,
       energy: 8,
-      maxEnergy: 10
+      maxEnergy: 10,
+      awake: 9000
     },
     lastActive: Date.now()
   },
@@ -68,7 +71,8 @@ const MOCK_ONLINE_PLAYERS = [
       defense: 8,
       speed: 5,
       energy: 12,
-      maxEnergy: 12
+      maxEnergy: 12,
+      awake: 11000
     },
     lastActive: Date.now()
   },
@@ -84,7 +88,8 @@ const MOCK_ONLINE_PLAYERS = [
       defense: 10,
       speed: 9,
       energy: 16,
-      maxEnergy: 18
+      maxEnergy: 18,
+      awake: 13500
     },
     lastActive: Date.now()
   }
