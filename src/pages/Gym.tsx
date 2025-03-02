@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGame } from '../context/GameContext';
@@ -12,19 +13,32 @@ const Gym = () => {
   const { state, dispatch } = useGame();
   const { playerStats } = state;
   
+  const calculateAttributeGain = (level: number): number => {
+    // Base gain is 1, with diminishing returns as level increases
+    const baseGain = 1;
+    
+    // Formula: Base gain + (level / 10), with maximum of 3 points per training
+    const levelBonus = Math.floor(level / 5) * 0.5;
+    const totalGain = Math.min(3, baseGain + levelBonus);
+    
+    return Math.max(1, Math.round(totalGain));
+  };
+  
   const handleTrainAttribute = (attribute: "strength" | "defense" | "speed") => {
     if (playerStats.energy < 1) {
       toast.error("Not enough energy to train!");
       return;
     }
     
+    const gainAmount = calculateAttributeGain(playerStats.level);
+    
     dispatch({ 
       type: "TRAIN_ATTRIBUTE", 
       attribute, 
-      amount: 1 
+      amount: gainAmount 
     });
     
-    toast.success(`Trained ${attribute}! +1 point`);
+    toast.success(`Trained ${attribute}! +${gainAmount} points`);
   };
   
   // Restore energy for money
