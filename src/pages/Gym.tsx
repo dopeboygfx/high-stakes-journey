@@ -13,15 +13,37 @@ const Gym = () => {
   const { state, dispatch } = useGame();
   const { playerStats } = state;
   
-  const calculateAttributeGain = (level: number): number => {
-    // Base gain is 1, with diminishing returns as level increases
-    const baseGain = 1;
+  const calculateAttributeGain = (level: number, awake: number): number => {
+    // Implement the formula based on awake value
+    const awakeDiv100 = awake / 100;
+    const sumBeforeSubtract = awakeDiv100 / 2;
+    const firstOptimalLevel = sumBeforeSubtract - 9;
     
-    // Formula: Base gain + (level / 10), with maximum of 3 points per training
-    const levelBonus = Math.floor(level / 5) * 0.5;
-    const totalGain = Math.min(3, baseGain + levelBonus);
+    // Calculate all optimal training levels
+    const optimalLevels: number[] = [];
+    let currentLevel = firstOptimalLevel;
     
-    return Math.max(1, Math.round(totalGain));
+    // Generate 10 optimal levels
+    for (let i = 0; i < 10; i++) {
+      optimalLevels.push(Math.round(currentLevel));
+      currentLevel += sumBeforeSubtract;
+    }
+    
+    // Find how close the player is to an optimal level
+    const closestOptimalLevel = optimalLevels.reduce((prev, curr) => {
+      return Math.abs(curr - level) < Math.abs(prev - level) ? curr : prev;
+    }, optimalLevels[0]);
+    
+    // Calculate distance from optimal (0 means at optimal level)
+    const distanceFromOptimal = Math.abs(level - closestOptimalLevel);
+    
+    // Base gain is higher at optimal levels, lower as you move away
+    let baseGain = 3;
+    if (distanceFromOptimal > 0) {
+      baseGain = Math.max(1, 3 - Math.floor(distanceFromOptimal / 5));
+    }
+    
+    return baseGain;
   };
   
   const handleTrainAttribute = (attribute: "strength" | "defense" | "speed") => {
@@ -30,7 +52,7 @@ const Gym = () => {
       return;
     }
     
-    const gainAmount = calculateAttributeGain(playerStats.level);
+    const gainAmount = calculateAttributeGain(playerStats.level, playerStats.awake);
     
     dispatch({ 
       type: "TRAIN_ATTRIBUTE", 
@@ -69,6 +91,27 @@ const Gym = () => {
   // Energy restore cost
   const energyRestoreCost = 100 * playerStats.level;
   
+  // Calculate optimal training levels based on awake
+  const calculateOptimalLevels = () => {
+    const awakeDiv100 = playerStats.awake / 100;
+    const sumBeforeSubtract = awakeDiv100 / 2;
+    const firstOptimalLevel = sumBeforeSubtract - 9;
+    
+    const optimalLevels: number[] = [];
+    let currentLevel = firstOptimalLevel;
+    
+    // Generate 5 optimal levels
+    for (let i = 0; i < 5; i++) {
+      optimalLevels.push(Math.round(currentLevel));
+      currentLevel += sumBeforeSubtract;
+    }
+    
+    return optimalLevels;
+  };
+  
+  const optimalLevels = calculateOptimalLevels();
+  const isAtOptimalLevel = optimalLevels.includes(playerStats.level);
+  
   return (
     <div className="container mx-auto p-4 space-y-6">
       <div className="flex items-center gap-4">
@@ -89,6 +132,17 @@ const Gym = () => {
               <p className="text-sm text-muted-foreground">
                 XP: {playerStats.exp}/{playerStats.expToNextLevel}
               </p>
+              <p className="text-sm text-muted-foreground">
+                Awake: {playerStats.awake}
+              </p>
+              <div className="mt-2">
+                <p className="text-sm font-medium">
+                  Optimal training levels: {optimalLevels.join(', ')}
+                </p>
+                {isAtOptimalLevel && (
+                  <p className="text-sm text-green-500 font-bold">You're at an optimal training level!</p>
+                )}
+              </div>
             </div>
             
             <div className="flex items-center mt-4 sm:mt-0">

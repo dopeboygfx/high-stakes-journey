@@ -1,4 +1,3 @@
-
 export type Drug = {
   id: string;
   name: string;
@@ -77,6 +76,7 @@ export type PlayerStats = {
   speed: number;
   energy: number;
   maxEnergy: number;
+  awake: number; // New attribute for determining optimal training levels
 };
 
 export type OnlinePlayer = {

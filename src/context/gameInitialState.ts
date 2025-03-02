@@ -50,6 +50,7 @@ export const INITIAL_PLAYER_STATS: PlayerStats = {
   speed: 5,
   energy: 10,
   maxEnergy: 10,
+  awake: 10000, // Initial awake value
 };
 
 export const initialState: GameState = {
