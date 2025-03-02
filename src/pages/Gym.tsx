@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGame } from '../context/GameContext';
@@ -25,13 +24,7 @@ const Gym = () => {
       amount: 1 
     });
     
-    // Also gain some experience from training
-    dispatch({
-      type: "GAIN_EXP",
-      amount: 5
-    });
-    
-    toast.success(`Trained ${attribute}! +1 point, +5 XP`);
+    toast.success(`Trained ${attribute}! +1 point`);
   };
   
   // Restore energy for money
