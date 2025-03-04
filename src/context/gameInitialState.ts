@@ -57,6 +57,7 @@ export const initialState: GameState = {
   money: INITIAL_MONEY,
   currentCity: CITIES[0].id,
   inventory: [],
+  consumables: [], // Add the missing consumables array
   heat: 0,
   gameOver: false,
   currentVehicle: "feet",
