@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import Explore from "./pages/Explore";
 import Gym from "./pages/Gym";
+import Achievements from "./pages/Achievements";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ const App = () => (
             <Route path="/shop" element={<Shop />} />
             <Route path="/explore" element={<Explore />} />
             <Route path="/gym" element={<Gym />} />
+            <Route path="/achievements" element={<Achievements />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

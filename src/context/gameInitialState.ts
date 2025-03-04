@@ -1,6 +1,7 @@
 
-import { GameState, Ability, PlayerStats } from "../types/game";
+import { GameState, Ability, PlayerStats, Achievement } from "../types/game";
 import { INITIAL_MONEY, CITIES } from "../constants/gameData";
+import { ACHIEVEMENTS } from "../constants/achievementData";
 
 export const INITIAL_ABILITIES: Ability[] = [
   {
@@ -57,7 +58,7 @@ export const initialState: GameState = {
   money: INITIAL_MONEY,
   currentCity: CITIES[0].id,
   inventory: [],
-  consumables: [], // Add the missing consumables array
+  consumables: [],
   heat: 0,
   gameOver: false,
   currentVehicle: "feet",
@@ -75,4 +76,12 @@ export const initialState: GameState = {
   cities: CITIES,
   playerStats: INITIAL_PLAYER_STATS,
   onlinePlayers: [],
+  achievements: ACHIEVEMENTS,
+  stats: {
+    dealsCompleted: 0,
+    citiesVisited: [CITIES[0].id],
+    fightswon: 0,
+    totalMoneyEarned: 0,
+    trainingSessionsCompleted: 0
+  }
 };

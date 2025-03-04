@@ -1,6 +1,7 @@
 
-import { GameState, GameAction, PlayerStats, Consumable } from "../types/game";
+import { GameState, GameAction, PlayerStats, Consumable, Achievement } from "../types/game";
 import { CITIES, VEHICLES, CONSUMABLES } from "../constants/gameData";
+import { POLICE_ENCOUNTERS } from "../constants/policeEncounterData";
 
 // Calculate exp needed for next level using a simple formula
 const calculateExpToNextLevel = (level: number): number => {
@@ -75,10 +76,65 @@ const calculateAwakeDepletion = (attribute: string): number => {
   }
 };
 
+// Check and update achievements
+const updateAchievements = (state: GameState): Achievement[] => {
+  return state.achievements.map(achievement => {
+    // Skip already completed achievements
+    if (achievement.completed) return achievement;
+    
+    let currentProgress = achievement.progress;
+    
+    // Update progress based on achievement type
+    switch(achievement.id) {
+      case 'deal_master':
+        currentProgress = state.stats.dealsCompleted;
+        break;
+      case 'world_traveler':
+        currentProgress = state.stats.citiesVisited.length;
+        break;
+      case 'combat_expert':
+        currentProgress = state.stats.fightswon;
+        break;
+      case 'heat_master':
+        currentProgress = state.wantedLevel >= 3 ? 1 : 0;
+        break;
+      case 'millionaire':
+        currentProgress = state.money;
+        break;
+      case 'workout_king':
+        currentProgress = state.stats.trainingSessionsCompleted;
+        break;
+    }
+    
+    // Check if achievement is completed
+    const completed = currentProgress >= achievement.requirement;
+    
+    return {
+      ...achievement,
+      progress: currentProgress,
+      completed: completed
+    };
+  });
+};
+
+// Generate a random police encounter based on heat and wanted level
+const generatePoliceEncounter = (heat: number, wantedLevel: number) => {
+  const encounterChance = (heat / 200) + (wantedLevel * 0.05);
+  
+  if (Math.random() < encounterChance) {
+    // Select a random encounter
+    return POLICE_ENCOUNTERS[Math.floor(Math.random() * POLICE_ENCOUNTERS.length)];
+  }
+  
+  return null;
+};
+
 export const gameReducer = (state: GameState, action: GameAction): GameState => {
+  let updatedState = { ...state };
+  
   switch (action.type) {
     case "BUY_DRUG":
-      return {
+      updatedState = {
         ...state,
         money: state.money - action.cost,
         inventory: [
@@ -91,6 +147,8 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
           },
         ],
       };
+      break;
+      
     case "SELL_DRUG": {
       const newInventory = state.inventory
         .map((item) =>
@@ -100,13 +158,20 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
         )
         .filter((item) => item.quantity > 0);
       
-      return {
+      updatedState = {
         ...state,
         money: state.money + action.profit,
         inventory: newInventory,
         heat: newInventory.length === 0 ? 0 : state.heat,
+        stats: {
+          ...state.stats,
+          dealsCompleted: state.stats.dealsCompleted + 1,
+          totalMoneyEarned: state.stats.totalMoneyEarned + action.profit
+        }
       };
+      break;
     }
+    
     case "TRAVEL_TO_CITY": {
       const hasHeatReduction = state.abilities.find(a => 
         a.id === "smooth_talk" && a.unlocked
@@ -116,62 +181,99 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
         ? Math.round(10 * (1 - hasHeatReduction.magnitude))
         : 10;
 
-      return {
+      // Check if this is a new city visit
+      const alreadyVisited = state.stats.citiesVisited.includes(action.cityId);
+      const updatedVisitedCities = alreadyVisited 
+        ? state.stats.citiesVisited 
+        : [...state.stats.citiesVisited, action.cityId];
+      
+      updatedState = {
         ...state,
         currentCity: action.cityId,
         heat: state.inventory.length > 0 
           ? Math.min(state.heat + heatIncrease, 100)
           : state.heat,
+        stats: {
+          ...state.stats,
+          citiesVisited: updatedVisitedCities
+        }
       };
+      
+      // Check for police encounter
+      const policeEncounter = generatePoliceEncounter(updatedState.heat, updatedState.wantedLevel);
+      if (policeEncounter) {
+        updatedState.activePoliceEncounter = policeEncounter;
+      }
+      
+      break;
     }
+    
     case "SET_TRAVELING":
-      return {
+      updatedState = {
         ...state,
         isTraveling: action.isTraveling,
       };
+      break;
+      
     case "BUY_VEHICLE": {
       const vehicle = VEHICLES.find(v => v.id === action.vehicleId)!;
-      return {
+      updatedState = {
         ...state,
         money: state.money - vehicle.price,
         currentVehicle: action.vehicleId,
       };
+      break;
     }
+    
     case "INCREASE_HEAT":
-      return {
+      updatedState = {
         ...state,
         heat: Math.min(state.heat + 10, 100),
         wantedLevel: state.heat >= 90 ? Math.min(state.wantedLevel + 1, 5) : state.wantedLevel,
       };
+      break;
+      
     case "REDUCE_HEAT":
-      return {
+      updatedState = {
         ...state,
         heat: Math.max(0, state.heat - 5),
       };
+      break;
+      
     case "ADD_MONEY":
-      return {
+      updatedState = {
         ...state,
         money: state.money + action.amount,
+        stats: {
+          ...state.stats,
+          totalMoneyEarned: state.stats.totalMoneyEarned + action.amount
+        }
       };
+      break;
+      
     case "REMOVE_MONEY":
-      return {
+      updatedState = {
         ...state,
         money: Math.max(0, state.money - action.amount),
       };
+      break;
+      
     case "UNLOCK_ABILITY": {
       const ability = state.abilities.find(a => a.id === action.abilityId)!;
       if (state.money < ability.cost) return state;
 
-      return {
+      updatedState = {
         ...state,
         money: state.money - ability.cost,
         abilities: state.abilities.map(a =>
           a.id === action.abilityId ? { ...a, unlocked: true } : a
         ),
       };
+      break;
     }
+    
     case "UPDATE_REPUTATION":
-      return {
+      updatedState = {
         ...state,
         reputations: state.reputations.map(rep =>
           rep.cityId === action.cityId
@@ -182,8 +284,10 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
             : rep
         ),
       };
+      break;
+      
     case "UPDATE_POLICE_ACTIVITY":
-      return {
+      updatedState = {
         ...state,
         policeActivity: state.policeActivity.map(activity =>
           activity.cityId === action.cityId
@@ -195,31 +299,39 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
             : activity
         ),
       };
+      break;
+      
     case "ATTEMPT_BRIBE": {
       const success = Math.random() < 0.6 - (state.bribeAttempts * 0.1);
-      return {
+      updatedState = {
         ...state,
         money: state.money - action.amount,
         heat: success ? Math.max(0, state.heat - 30) : state.heat + 20,
         bribeAttempts: state.bribeAttempts + 1,
         wantedLevel: success ? Math.max(0, state.wantedLevel - 1) : state.wantedLevel,
       };
+      break;
     }
+    
     case "ADD_MARKET_EVENT":
-      return {
+      updatedState = {
         ...state,
         activeMarketEvents: [
           ...state.activeMarketEvents,
           { ...action.event, startTime: Date.now() }
         ],
       };
+      break;
+      
     case "REMOVE_MARKET_EVENT":
-      return {
+      updatedState = {
         ...state,
         activeMarketEvents: state.activeMarketEvents.filter(
           event => event.id !== action.eventId
         ),
       };
+      break;
+      
     case "GAIN_EXP": {
       const updatedStats = {
         ...state.playerStats,
@@ -229,11 +341,13 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
       // Check for level up
       const finalStats = handleLevelUp(updatedStats);
       
-      return {
+      updatedState = {
         ...state,
         playerStats: finalStats
       };
+      break;
     }
+    
     case "TRAIN_ATTRIBUTE": {
       // Not enough energy or awake
       if (state.playerStats.energy < 1 || state.playerStats.awake <= 0) return state;
@@ -241,18 +355,24 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
       const energyCost = 1;
       const awakeCost = calculateAwakeDepletion(action.attribute);
       
-      return {
+      updatedState = {
         ...state,
         playerStats: {
           ...state.playerStats,
           [action.attribute]: state.playerStats[action.attribute] + action.amount,
           energy: Math.max(0, state.playerStats.energy - energyCost),
           awake: Math.max(0, state.playerStats.awake - awakeCost)
+        },
+        stats: {
+          ...state.stats,
+          trainingSessionsCompleted: state.stats.trainingSessionsCompleted + 1
         }
       };
+      break;
     }
+    
     case "RESTORE_ENERGY": {
-      return {
+      updatedState = {
         ...state,
         playerStats: {
           ...state.playerStats,
@@ -262,23 +382,27 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
           )
         }
       };
+      break;
     }
+    
     case "RESTORE_AWAKE": {
-      return {
+      updatedState = {
         ...state,
         playerStats: {
           ...state.playerStats,
           awake: Math.min(10000, state.playerStats.awake + action.amount)
         }
       };
+      break;
     }
+    
     case "BUY_CONSUMABLE": {
       const consumable = CONSUMABLES.find(c => c.id === action.consumableId)!;
       const totalCost = consumable.price * action.quantity;
       
       if (state.money < totalCost) return state;
       
-      return {
+      updatedState = {
         ...state,
         money: state.money - totalCost,
         consumables: [
@@ -289,7 +413,9 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
           }
         ]
       };
+      break;
     }
+    
     case "USE_CONSUMABLE": {
       const consumable = CONSUMABLES.find(c => c.id === action.consumableId)!;
       const consumableInventory = state.consumables.find(c => c.consumableId === action.consumableId);
@@ -328,12 +454,14 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
           break;
       }
       
-      return {
+      updatedState = {
         ...state,
         consumables: updatedConsumables,
         playerStats: updatedPlayerStats
       };
+      break;
     }
+    
     case "FIGHT_PLAYER": {
       // Find the target player from online players
       const targetPlayer = state.onlinePlayers.find(p => p.id === action.targetId);
@@ -348,8 +476,7 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
       // Calculate combat result
       const combatResult = resolveCombat(state.playerStats, targetPlayer.stats);
       
-      // Update player stats based on combat result
-      return {
+      updatedState = {
         ...state,
         playerStats: {
           ...state.playerStats,
@@ -359,21 +486,180 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
         money: combatResult.winner === "player" 
           ? state.money + combatResult.moneyGained 
           : state.money,
-        lastCombat: combatResult
+        lastCombat: combatResult,
+        stats: {
+          ...state.stats,
+          fightswon: combatResult.winner === "player" 
+            ? state.stats.fightswon + 1 
+            : state.stats.fightswon
+        }
       };
+      break;
     }
+    
     case "UPDATE_ONLINE_PLAYERS": {
-      return {
+      updatedState = {
         ...state,
         onlinePlayers: action.players
       };
+      break;
     }
+    
     case "GAME_OVER":
-      return {
+      updatedState = {
         ...state,
         gameOver: true,
       };
+      break;
+      
+    case "UPDATE_ACHIEVEMENT_PROGRESS": {
+      updatedState = {
+        ...state,
+        achievements: state.achievements.map(achievement => 
+          achievement.id === action.achievementId
+            ? { 
+                ...achievement, 
+                progress: action.progress,
+                completed: action.progress >= achievement.requirement 
+              }
+            : achievement
+        )
+      };
+      break;
+    }
+    
+    case "CLAIM_ACHIEVEMENT": {
+      updatedState = {
+        ...state,
+        achievements: state.achievements.map(achievement => 
+          achievement.id === action.achievementId && achievement.completed
+            ? { ...achievement, claimed: true }
+            : achievement
+        )
+      };
+      break;
+    }
+    
+    case "START_POLICE_ENCOUNTER": {
+      updatedState = {
+        ...state,
+        activePoliceEncounter: action.encounter
+      };
+      break;
+    }
+    
+    case "RESOLVE_POLICE_ENCOUNTER": {
+      if (!state.activePoliceEncounter) return state;
+      
+      const option = state.activePoliceEncounter.options[action.outcomeIndex];
+      const success = Math.random() < option.successChance;
+      
+      // Apply outcome effects
+      let heatChange = option.heatChange;
+      let moneyChange = option.moneyChange;
+      
+      if (!success) {
+        // Failed attempt has worse outcomes
+        heatChange = option.outcome === 'surrender' ? 15 : 30; // Always increase heat on failure
+        moneyChange = option.outcome === 'bribe' ? option.moneyChange : -500; // Lose money on failed non-bribe
+      }
+      
+      updatedState = {
+        ...state,
+        activePoliceEncounter: undefined,
+        heat: Math.max(0, Math.min(100, state.heat + heatChange)),
+        money: Math.max(0, state.money + moneyChange),
+        playerStats: {
+          ...state.playerStats,
+          energy: Math.max(0, state.playerStats.energy - option.energyCost)
+        },
+        wantedLevel: success && heatChange < 0 
+          ? Math.max(0, state.wantedLevel - 1) // Reduce wanted level on successful de-escalation
+          : !success && option.outcome !== 'surrender'
+            ? Math.min(5, state.wantedLevel + 1) // Increase wanted level on failed aggressive action
+            : state.wantedLevel
+      };
+      
+      // Show outcome message
+      if (success) {
+        switch(option.outcome) {
+          case 'bribe':
+            toast.success("The officer accepted your bribe and let you go!");
+            break;
+          case 'flee':
+            toast.success("You managed to escape!");
+            break;
+          case 'fight':
+            toast.success("You overpowered the officers and escaped!");
+            break;
+          case 'surrender':
+            toast.success("The officers believed your story and let you go with a warning.");
+            break;
+        }
+      } else {
+        switch(option.outcome) {
+          case 'bribe':
+            toast.error("The officer rejected your bribe and increased your wanted level!");
+            break;
+          case 'flee':
+            toast.error("Your escape attempt failed! Your heat has increased.");
+            break;
+          case 'fight':
+            toast.error("You couldn't overpower the officers. Your wanted level increased!");
+            break;
+          case 'surrender':
+            toast.error("The officers didn't believe your story but let you go with a fine.");
+            break;
+        }
+      }
+      
+      break;
+    }
+    
+    case "INCREASE_MAX_ENERGY": {
+      updatedState = {
+        ...state,
+        playerStats: {
+          ...state.playerStats,
+          maxEnergy: state.playerStats.maxEnergy + action.amount,
+          energy: state.playerStats.energy + action.amount // Also increase current energy
+        }
+      };
+      break;
+    }
+    
+    case "BOOST_ATTRIBUTE": {
+      if (!action.attribute) return state;
+      
+      updatedState = {
+        ...state,
+        playerStats: {
+          ...state.playerStats,
+          [action.attribute]: state.playerStats[action.attribute] + action.amount
+        }
+      };
+      break;
+    }
+    
+    case "RECORD_STAT": {
+      updatedState = {
+        ...state,
+        stats: {
+          ...state.stats,
+          [action.statType]: action.statType === 'totalMoneyEarned' 
+            ? state.stats[action.statType] + action.value 
+            : state.stats[action.statType] + 1
+        }
+      };
+      break;
+    }
+    
     default:
       return state;
   }
+  
+  // Update achievements after state changes
+  updatedState.achievements = updateAchievements(updatedState);
+  
+  return updatedState;
 };

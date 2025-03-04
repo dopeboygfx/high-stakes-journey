@@ -1,4 +1,3 @@
-
 export type Drug = {
   id: string;
   name: string;
@@ -109,6 +108,40 @@ export type CombatResult = {
   description: string;
 };
 
+export type PoliceEncounter = {
+  id: string;
+  title: string;
+  description: string;
+  options: {
+    text: string;
+    outcome: 'bribe' | 'flee' | 'fight' | 'surrender';
+    successChance: number;
+    heatChange: number;
+    moneyChange: number;
+    energyCost: number;
+    requiredAttribute?: {
+      type: 'strength' | 'defense' | 'speed';
+      value: number;
+    };
+  }[];
+};
+
+export type Achievement = {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  requirement: number;
+  progress: number;
+  completed: boolean;
+  claimed: boolean;
+  reward: {
+    type: 'money' | 'exp' | 'reputation' | 'attribute';
+    amount: number;
+    target?: string;
+  };
+};
+
 export type GameState = {
   money: number;
   currentCity: string;
@@ -129,6 +162,15 @@ export type GameState = {
   playerStats: PlayerStats;
   onlinePlayers: OnlinePlayer[];
   lastCombat?: CombatResult;
+  achievements: Achievement[];
+  activePoliceEncounter?: PoliceEncounter;
+  stats: {
+    dealsCompleted: number;
+    citiesVisited: string[];
+    fightswon: number;
+    totalMoneyEarned: number;
+    trainingSessionsCompleted: number;
+  };
 };
 
 export type GameAction =
@@ -155,4 +197,11 @@ export type GameAction =
   | { type: "USE_CONSUMABLE"; consumableId: string }
   | { type: "FIGHT_PLAYER"; targetId: string }
   | { type: "UPDATE_ONLINE_PLAYERS"; players: OnlinePlayer[] }
-  | { type: "GAME_OVER" };
+  | { type: "GAME_OVER" }
+  | { type: "UPDATE_ACHIEVEMENT_PROGRESS"; achievementId: string; progress: number }
+  | { type: "CLAIM_ACHIEVEMENT"; achievementId: string }
+  | { type: "START_POLICE_ENCOUNTER"; encounter: PoliceEncounter }
+  | { type: "RESOLVE_POLICE_ENCOUNTER"; outcomeIndex: number }
+  | { type: "INCREASE_MAX_ENERGY"; amount: number }
+  | { type: "BOOST_ATTRIBUTE"; attribute: "strength" | "defense" | "speed"; amount: number }
+  | { type: "RECORD_STAT"; statType: "dealsCompleted" | "fightswon" | "trainingSessionsCompleted" | "totalMoneyEarned"; value: number };

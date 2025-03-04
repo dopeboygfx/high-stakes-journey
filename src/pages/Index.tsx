@@ -11,7 +11,8 @@ import { Inventory } from "../components/game/Inventory";
 import { AbilitiesPanel } from "../components/game/AbilitiesPanel";
 import { GameOver } from "../components/game/GameOver";
 import { PlayerStatsPanel } from "../components/game/PlayerStatsPanel";
-import { Users, Dumbbell } from "lucide-react";
+import { Users, Dumbbell, ShoppingBag, Trophy, PoliceIcon } from "lucide-react";
+import { PoliceEncounterModal } from "../components/game/PoliceEncounterModal";
 
 const Index = () => {
   const { state } = useGame();
@@ -31,7 +32,7 @@ const Index = () => {
       <div className="max-w-6xl mx-auto space-y-8">
         <GameHeader />
         
-        <div className="flex justify-between mb-4">
+        <div className="flex flex-wrap gap-4 mb-4">
           <Link 
             to="/explore" 
             className="flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
@@ -46,6 +47,22 @@ const Index = () => {
           >
             <Dumbbell className="mr-2 h-4 w-4" />
             Visit Gym
+          </Link>
+          
+          <Link 
+            to="/shop" 
+            className="flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+          >
+            <ShoppingBag className="mr-2 h-4 w-4" />
+            Shop
+          </Link>
+          
+          <Link 
+            to="/achievements" 
+            className="flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+          >
+            <Trophy className="mr-2 h-4 w-4" />
+            Achievements
           </Link>
         </div>
         
@@ -63,6 +80,9 @@ const Index = () => {
           </div>
         </div>
       </div>
+      
+      {/* Police Encounter Modal */}
+      {state.activePoliceEncounter && <PoliceEncounterModal />}
     </div>
   );
 };
