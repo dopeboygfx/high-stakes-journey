@@ -19,7 +19,7 @@ const Index = () => {
 
   // Game over state
   if (state.gameOver) {
-    return <GameOver />;
+    return <GameOver finalScore={state.money} />;
   }
 
   return (
