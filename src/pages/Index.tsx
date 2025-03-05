@@ -1,88 +1,84 @@
 
-import { useEffect } from "react";
-import { useGame } from "../context/GameContext";
+import React from "react";
 import { Link } from "react-router-dom";
-import { toast } from "sonner";
-import { GameHeader } from "../components/game/GameHeader";
+import { ArrowRight, ShoppingBag, Trophy, Map, Dumbbell, Shield } from "lucide-react";
 import { MarketPlace } from "../components/game/MarketPlace";
 import { TravelOptions } from "../components/game/TravelOptions";
-import { VehicleDisplay } from "../components/game/VehicleDisplay";
-import { Inventory } from "../components/game/Inventory";
-import { AbilitiesPanel } from "../components/game/AbilitiesPanel";
-import { GameOver } from "../components/game/GameOver";
 import { PlayerStatsPanel } from "../components/game/PlayerStatsPanel";
-import { Users, Dumbbell, ShoppingBag, Trophy, PoliceIcon } from "lucide-react";
+import { AbilitiesPanel } from "../components/game/AbilitiesPanel";
+import { useGame } from "../context/GameContext";
+import { GameOver } from "../components/game/GameOver";
+import { VehicleDisplay } from "../components/game/VehicleDisplay";
+import { GameHeader } from "../components/game/GameHeader";
+import { Inventory } from "../components/game/Inventory";
+import { ConsumablesInventory } from "../components/game/ConsumablesInventory";
 import { PoliceEncounterModal } from "../components/game/PoliceEncounterModal";
 
 const Index = () => {
   const { state } = useGame();
 
-  useEffect(() => {
-    if (state.gameOver) {
-      toast.error("Game Over! You got caught!");
-    }
-  }, [state.gameOver]);
-
+  // Game over state
   if (state.gameOver) {
-    return <GameOver finalScore={state.money} />;
+    return <GameOver />;
   }
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="max-w-6xl mx-auto space-y-8">
-        <GameHeader />
-        
-        <div className="flex flex-wrap gap-4 mb-4">
-          <Link 
-            to="/explore" 
-            className="flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-          >
-            <Users className="mr-2 h-4 w-4" />
-            Explore City
-          </Link>
-          
-          <Link 
-            to="/gym" 
-            className="flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-          >
-            <Dumbbell className="mr-2 h-4 w-4" />
-            Visit Gym
-          </Link>
-          
-          <Link 
-            to="/shop" 
-            className="flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-          >
-            <ShoppingBag className="mr-2 h-4 w-4" />
-            Shop
-          </Link>
-          
-          <Link 
-            to="/achievements" 
-            className="flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-          >
-            <Trophy className="mr-2 h-4 w-4" />
-            Achievements
-          </Link>
+    <div className="container mx-auto p-4 space-y-6">
+      <GameHeader />
+      <PoliceEncounterModal />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left column - Player stats & inventory */}
+        <div className="space-y-4">
+          <PlayerStatsPanel />
+          <ConsumablesInventory />
+          <Inventory />
         </div>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        {/* Middle column - Market */}
+        <div className="space-y-6">
           <MarketPlace />
           <VehicleDisplay />
-          <TravelOptions />
         </div>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Inventory />
-          <div className="space-y-8">
-            <PlayerStatsPanel />
-            <AbilitiesPanel />
+
+        {/* Right column - Travel & Abilities */}
+        <div className="space-y-6">
+          <TravelOptions />
+          <AbilitiesPanel />
+
+          {/* Quick links */}
+          <div className="grid grid-cols-2 gap-3">
+            <Link
+              to="/shop"
+              className="flex items-center justify-center gap-2 p-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              <ShoppingBag className="w-4 h-4" />
+              <span>Shop</span>
+            </Link>
+            <Link
+              to="/achievements"
+              className="flex items-center justify-center gap-2 p-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              <Trophy className="w-4 h-4" />
+              <span>Achievements</span>
+            </Link>
+            <Link
+              to="/explore"
+              className="flex items-center justify-center gap-2 p-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              <Map className="w-4 h-4" />
+              <span>Explore</span>
+            </Link>
+            <Link
+              to="/gym"
+              className="flex items-center justify-center gap-2 p-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              <Dumbbell className="w-4 h-4" />
+              <span>Gym</span>
+            </Link>
           </div>
         </div>
       </div>
-      
-      {/* Police Encounter Modal */}
-      {state.activePoliceEncounter && <PoliceEncounterModal />}
     </div>
   );
 };

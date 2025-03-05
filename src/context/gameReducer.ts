@@ -1,7 +1,7 @@
-
 import { GameState, GameAction, PlayerStats, Consumable, Achievement } from "../types/game";
 import { CITIES, VEHICLES, CONSUMABLES } from "../constants/gameData";
 import { POLICE_ENCOUNTERS } from "../constants/policeEncounterData";
+import { toast } from "sonner";
 
 // Calculate exp needed for next level using a simple formula
 const calculateExpToNextLevel = (level: number): number => {

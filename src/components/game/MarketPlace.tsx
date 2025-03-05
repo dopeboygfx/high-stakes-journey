@@ -1,5 +1,5 @@
 
-import { Pill, Cannabis, FlaskConical, Wine, Candy } from "lucide-react";
+import { Pill, Cannabis, Beaker, Wine, Candy } from "lucide-react";
 import { useGame } from "../../context/GameContext";
 import { CITIES } from "../../constants/gameData";
 import { MarketEvents } from "./MarketEvents";
@@ -10,7 +10,7 @@ import { useMarket } from "../../hooks/useMarket";
 const drugIcons: Record<string, any> = {
   weed: Cannabis,
   cocaine: Pill,
-  lsd: FlaskConical,
+  lsd: Beaker,
   shrooms: Wine,
   ecstasy: Candy,
 };

@@ -1,14 +1,13 @@
-
 import React from 'react';
 import { useGame } from '../../context/GameContext';
 import { CONSUMABLES } from '../../constants/gameData';
-import { PillBottle, Flask, Dumbbell, Shield, Zap } from 'lucide-react';
+import { PillBottle, Beaker, Dumbbell, Shield, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatMoney } from '../../utils/gameUtils';
 
 const consumableIcons: Record<string, any> = {
   awake_pill: PillBottle,
-  energy_drink: Flask,
+  energy_drink: Beaker,
   strength_boost: Dumbbell,
   defense_boost: Shield,
   speed_boost: Zap,
@@ -46,7 +45,7 @@ export const ConsumablesShop = () => {
       
       <div className="grid gap-4">
         {CONSUMABLES.map((consumable) => {
-          const Icon = consumableIcons[consumable.id] || Flask;
+          const Icon = consumableIcons[consumable.id] || Beaker;
           const count = getConsumableCount(consumable.id);
           
           return (

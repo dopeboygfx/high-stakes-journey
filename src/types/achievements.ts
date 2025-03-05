@@ -7,6 +7,7 @@ export type Achievement = {
   requirement: number;
   progress: number;
   completed: boolean;
+  claimed: boolean; // Added this field to match the game.ts type
   reward: {
     type: 'money' | 'exp' | 'reputation' | 'attribute';
     amount: number;

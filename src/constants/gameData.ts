@@ -1,9 +1,9 @@
 
 import { City, Drug, Vehicle, Consumable } from "../types/game";
 
-export const INITIAL_MONEY = 3000; // Increased to allow more initial strategy
+export const INITIAL_MONEY = 5000; // Increased for better early game experience
 export const MAX_HEAT = 100;
-export const BASE_TRAVEL_SPEED = 10; // Slowed down more to make travel decisions more impactful
+export const BASE_TRAVEL_SPEED = 12; // Slightly increased for better pace
 
 export const VEHICLES: Vehicle[] = [
   {
@@ -16,46 +16,46 @@ export const VEHICLES: Vehicle[] = [
   {
     id: "bicycle",
     name: "Bicycle",
-    price: 600, // More affordable first upgrade
+    price: 500, // More affordable first upgrade
     speed: 1.8,
     description: "Cheap and reliable",
   },
   {
     id: "motorcycle",
     name: "Motorcycle",
-    price: 3500,
-    speed: 3.0, // Slightly faster to differentiate from bicycle
+    price: 3000, // Reduced price for better early progression
+    speed: 3.0,
     description: "Fast and agile",
   },
   {
     id: "car",
     name: "Used Car",
-    price: 10000, // More achievable mid-game upgrade
+    price: 8000, // More achievable mid-game upgrade
     speed: 3.8,
     description: "Standard transportation",
   },
   {
     id: "sportscar",
     name: "Sports Car",
-    price: 40000,
-    speed: 5.0, // Increased speed differential
+    price: 30000, // More balanced price progression
+    speed: 5.0,
     description: "Fast and stylish",
   },
   {
     id: "helicopter",
     name: "Helicopter",
-    price: 150000, // More achievable endgame goal
-    speed: 8.0, // Significantly faster
+    price: 100000, // More achievable endgame goal
+    speed: 8.0,
     description: "Ultimate speed and mobility",
   },
 ];
 
 export const DRUGS: Drug[] = [
-  { id: "weed", name: "Weed", basePrice: 100, volatility: 0.35 }, // Starter drug more profitable
-  { id: "cocaine", name: "Cocaine", basePrice: 2500, volatility: 0.7 }, // Higher risk/reward
+  { id: "weed", name: "Weed", basePrice: 150, volatility: 0.35 }, // Better starter profitability
+  { id: "cocaine", name: "Cocaine", basePrice: 2000, volatility: 0.7 }, // Slightly reduced for better progression
   { id: "lsd", name: "LSD", basePrice: 500, volatility: 0.5 },
-  { id: "shrooms", name: "Shrooms", basePrice: 200, volatility: 0.4 },
-  { id: "ecstasy", name: "Ecstasy", basePrice: 800, volatility: 0.6 }, // More distinct pricing tiers
+  { id: "shrooms", name: "Shrooms", basePrice: 250, volatility: 0.4 }, // Slightly better early returns
+  { id: "ecstasy", name: "Ecstasy", basePrice: 800, volatility: 0.6 },
 ];
 
 export const CONSUMABLES: Consumable[] = [
@@ -63,7 +63,7 @@ export const CONSUMABLES: Consumable[] = [
     id: "awake_pill",
     name: "Awake Pill",
     description: "Restores alertness to 100%",
-    price: 500,
+    price: 400, // Reduced to be more accessible
     effect: "RESTORE_AWAKE",
     magnitude: 100 // Restores 100% of awake
   },
@@ -71,7 +71,7 @@ export const CONSUMABLES: Consumable[] = [
     id: "energy_drink",
     name: "Energy Drink",
     description: "Restores 50% of max energy",
-    price: 200,
+    price: 150, // More affordable for early game
     effect: "RESTORE_ENERGY",
     magnitude: 50 // Restores 50% of max energy
   },
@@ -79,7 +79,7 @@ export const CONSUMABLES: Consumable[] = [
     id: "strength_boost",
     name: "Strength Booster",
     description: "Permanently increases strength by 1",
-    price: 1000,
+    price: 800, // More balanced price
     effect: "BOOST_STRENGTH",
     magnitude: 1 // Adds 1 to strength
   },
@@ -87,7 +87,7 @@ export const CONSUMABLES: Consumable[] = [
     id: "defense_boost",
     name: "Defense Booster",
     description: "Permanently increases defense by 1",
-    price: 1000,
+    price: 800, // Consistent with strength price
     effect: "BOOST_DEFENSE",
     magnitude: 1 // Adds 1 to defense
   },
@@ -95,7 +95,7 @@ export const CONSUMABLES: Consumable[] = [
     id: "speed_boost",
     name: "Speed Booster",
     description: "Permanently increases speed by 1",
-    price: 1000,
+    price: 800, // Consistent with other attribute prices
     effect: "BOOST_SPEED",
     magnitude: 1 // Adds 1 to speed
   }

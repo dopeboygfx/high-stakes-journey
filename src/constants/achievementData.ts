@@ -10,6 +10,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     requirement: 50,
     progress: 0,
     completed: false,
+    claimed: false,
     reward: {
       type: 'money',
       amount: 5000
@@ -23,6 +24,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     requirement: 5,
     progress: 0,
     completed: false,
+    claimed: false,
     reward: {
       type: 'exp',
       amount: 200
@@ -36,6 +38,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     requirement: 10,
     progress: 0,
     completed: false,
+    claimed: false,
     reward: {
       type: 'attribute',
       amount: 2,
@@ -50,6 +53,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     requirement: 1,
     progress: 0,
     completed: false,
+    claimed: false,
     reward: {
       type: 'reputation',
       amount: 20,
@@ -64,6 +68,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     requirement: 1000000,
     progress: 0,
     completed: false,
+    claimed: false,
     reward: {
       type: 'exp',
       amount: 500
@@ -77,6 +82,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     requirement: 50,
     progress: 0,
     completed: false,
+    claimed: false,
     reward: {
       type: 'attribute',
       amount: 3,

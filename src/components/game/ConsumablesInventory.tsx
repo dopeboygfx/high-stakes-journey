@@ -1,13 +1,13 @@
+
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { useGame } from '../../context/GameContext';
 import { CONSUMABLES } from '../../constants/gameData';
-import { PillBottle, Flask, Dumbbell, Shield, Zap, ShoppingBag } from 'lucide-react';
+import { PillBottle, Beaker, Dumbbell, Shield, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 
 const consumableIcons: Record<string, any> = {
   awake_pill: PillBottle,
-  energy_drink: Flask,
+  energy_drink: Beaker,
   strength_boost: Dumbbell,
   defense_boost: Shield,
   speed_boost: Zap,
@@ -17,62 +17,59 @@ export const ConsumablesInventory = () => {
   const { state, dispatch } = useGame();
   
   const handleUseConsumable = (consumableId: string) => {
-    const consumable = state.consumables.find(c => c.consumableId === consumableId);
+    const consumable = CONSUMABLES.find(c => c.id === consumableId);
+    if (!consumable) return;
     
-    if (!consumable || consumable.quantity <= 0) {
-      toast.error(`No ${consumableId} in inventory!`);
+    const inventoryItem = state.consumables.find(c => c.consumableId === consumableId);
+    if (!inventoryItem || inventoryItem.quantity <= 0) {
+      toast.error(`No ${consumable.name} left in inventory!`);
       return;
     }
     
     dispatch({ type: "USE_CONSUMABLE", consumableId });
-    
-    const consumableData = CONSUMABLES.find(c => c.id === consumableId);
-    if (consumableData) {
-      toast.success(`Used ${consumableData.name}!`);
-    }
+    toast.success(`Used ${consumable.name}!`);
   };
   
-  if (state.consumables.length === 0) {
+  // Filter to only show consumables that the player has
+  const playerConsumables = state.consumables.filter(c => c.quantity > 0);
+  
+  if (playerConsumables.length === 0) {
     return (
-      <div className="p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50">
-        <h2 className="text-xl font-semibold mb-4">Consumables</h2>
-        <p className="text-muted-foreground">No consumables in inventory</p>
-        <Link 
-          to="/shop" 
-          className="flex items-center mt-2 text-sm text-primary"
-        >
-          <ShoppingBag className="mr-1 h-3 w-3" />
-          Visit Shop
-        </Link>
+      <div className="p-4 rounded-lg border bg-card">
+        <h2 className="text-xl font-bold mb-4">Inventory</h2>
+        <p className="text-muted-foreground text-center py-4">No consumables in inventory</p>
       </div>
     );
   }
   
   return (
-    <div className="p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50">
-      <h2 className="text-xl font-semibold mb-4">Consumables</h2>
-      <div className="grid gap-2">
-        {state.consumables.map((item) => {
+    <div className="p-4 rounded-lg border bg-card">
+      <h2 className="text-xl font-bold mb-4">Consumables</h2>
+      
+      <div className="grid gap-3">
+        {playerConsumables.map((item) => {
           const consumable = CONSUMABLES.find(c => c.id === item.consumableId);
           if (!consumable) return null;
           
-          const Icon = consumableIcons[consumable.id] || Flask;
+          const Icon = consumableIcons[consumable.id] || Beaker;
           
           return (
-            <div key={item.consumableId} className="flex justify-between items-center p-2 border rounded-md bg-card/50">
-              <div className="flex items-center gap-2">
-                <Icon className="h-4 w-4 text-primary" />
+            <div key={item.consumableId} className="flex items-center justify-between p-3 border rounded-md bg-background/50">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 flex items-center justify-center bg-primary/10 rounded-full">
+                  <Icon className="w-4 h-4 text-primary" />
+                </div>
                 <div>
-                  <span className="font-medium text-sm">{consumable.name}</span>
+                  <h3 className="font-medium">{consumable.name}</h3>
                   <p className="text-xs text-muted-foreground">{consumable.description}</p>
                 </div>
               </div>
               
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">x{item.quantity}</span>
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium">×{item.quantity}</span>
                 <button
                   onClick={() => handleUseConsumable(item.consumableId)}
-                  className="text-xs px-2 py-1 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+                  className="px-2 py-1 text-xs bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
                 >
                   Use
                 </button>
