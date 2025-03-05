@@ -1,12 +1,12 @@
 
 import React from 'react';
-import { Shield, AlertTriangle, CreditCard, Run, Swords, HandCoins } from 'lucide-react';
+import { Shield, AlertTriangle, CreditCard, ArrowRight, Swords, HandCoins } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
 import { toast } from 'sonner';
 
 const outcomeIcons = {
   bribe: HandCoins,
-  flee: Run,
+  flee: ArrowRight,
   fight: Swords,
   surrender: Shield
 };
