@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Shield, AlertTriangle, CreditCard, ArrowRight, Swords, HandCoins } from 'lucide-react';
+import { Shield, ArrowRight, Swords, HandCoins } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
 import { toast } from 'sonner';
 
