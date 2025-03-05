@@ -3,6 +3,7 @@ import { MapPin, DollarSign, AlertCircle, Bell } from "lucide-react";
 import { useGame } from "../../context/GameContext";
 import { CITIES } from "../../constants/gameData";
 import { formatMoney } from "../../utils/gameUtils";
+import { Progress } from "../ui/progress";
 
 export const GameHeader = () => {
   const { state } = useGame();
@@ -27,13 +28,13 @@ export const GameHeader = () => {
               ❤️
             </div>
             <span className="text-sm font-medium">
-              {state.playerStats.health}/{state.playerStats.maxHealth}
+              {state.playerStats.energy}/{state.playerStats.maxEnergy}
             </span>
           </div>
           <div className="stat-bar">
             <div 
               className="stat-value bg-[#ff3b3b]" 
-              style={{ width: `${(state.playerStats.health / state.playerStats.maxHealth) * 100}%` }}
+              style={{ width: `${(state.playerStats.energy / state.playerStats.maxEnergy) * 100}%` }}
             ></div>
           </div>
         </div>
