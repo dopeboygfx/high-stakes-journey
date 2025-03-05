@@ -30,10 +30,6 @@ export default {
           success: "#4CAF50",
           neutral: "#9E9E9E",
           accent: "#FFD700",
-          health: "#ff3b3b",
-          energy: "#ffee00",
-          attack: "#ff7b00",
-          exp: "#4CAF50",
         },
         primary: {
           DEFAULT: "hsl(var(--primary))",

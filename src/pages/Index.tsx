@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { Home, ShoppingBag, Trophy, Map, Dumbbell, Shield, Users, Bell, MoreHorizontal } from "lucide-react";
+import { ArrowRight, ShoppingBag, Trophy, Map, Dumbbell, Shield } from "lucide-react";
 import { MarketPlace } from "../components/game/MarketPlace";
 import { TravelOptions } from "../components/game/TravelOptions";
 import { PlayerStatsPanel } from "../components/game/PlayerStatsPanel";
@@ -13,10 +13,6 @@ import { GameHeader } from "../components/game/GameHeader";
 import { Inventory } from "../components/game/Inventory";
 import { ConsumablesInventory } from "../components/game/ConsumablesInventory";
 import { PoliceEncounterModal } from "../components/game/PoliceEncounterModal";
-import { PropertiesPanel } from "../components/game/PropertiesPanel";
-import { StockpilePanel } from "../components/game/StockpilePanel";
-import { MobPanel } from "../components/game/MobPanel";
-import { ChallengesPanel } from "../components/game/ChallengesPanel";
 
 const Index = () => {
   const { state } = useGame();
@@ -27,40 +23,61 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="container mx-auto p-4 space-y-6">
       <GameHeader />
       <PoliceEncounterModal />
 
-      <div className="container mx-auto p-4 space-y-4">
-        <PlayerStatsPanel />
-        <PropertiesPanel />
-        <StockpilePanel />
-        <MobPanel />
-        <ChallengesPanel />
-      </div>
-      
-      {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-secondary border-t border-border flex justify-between">
-        <Link to="/" className="flex-1 flex flex-col items-center justify-center py-2 text-primary">
-          <Home className="w-5 h-5" />
-          <span className="text-xs">Home</span>
-        </Link>
-        <Link to="/shop" className="flex-1 flex flex-col items-center justify-center py-2">
-          <Bell className="w-5 h-5" />
-          <span className="text-xs">News</span>
-        </Link>
-        <Link to="/achievements" className="flex-1 flex flex-col items-center justify-center py-2 text-primary">
-          <ShoppingBag className="w-5 h-5" />
-          <span className="text-xs">Shop</span>
-        </Link>
-        <Link to="/explore" className="flex-1 flex flex-col items-center justify-center py-2">
-          <Users className="w-5 h-5" />
-          <span className="text-xs">Mob</span>
-        </Link>
-        <Link to="/gym" className="flex-1 flex flex-col items-center justify-center py-2">
-          <MoreHorizontal className="w-5 h-5" />
-          <span className="text-xs">More</span>
-        </Link>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left column - Player stats & inventory */}
+        <div className="space-y-4">
+          <PlayerStatsPanel />
+          <ConsumablesInventory />
+          <Inventory />
+        </div>
+
+        {/* Middle column - Market */}
+        <div className="space-y-6">
+          <MarketPlace />
+          <VehicleDisplay />
+        </div>
+
+        {/* Right column - Travel & Abilities */}
+        <div className="space-y-6">
+          <TravelOptions />
+          <AbilitiesPanel />
+
+          {/* Quick links */}
+          <div className="grid grid-cols-2 gap-3">
+            <Link
+              to="/shop"
+              className="flex items-center justify-center gap-2 p-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              <ShoppingBag className="w-4 h-4" />
+              <span>Shop</span>
+            </Link>
+            <Link
+              to="/achievements"
+              className="flex items-center justify-center gap-2 p-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              <Trophy className="w-4 h-4" />
+              <span>Achievements</span>
+            </Link>
+            <Link
+              to="/explore"
+              className="flex items-center justify-center gap-2 p-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              <Map className="w-4 h-4" />
+              <span>Explore</span>
+            </Link>
+            <Link
+              to="/gym"
+              className="flex items-center justify-center gap-2 p-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              <Dumbbell className="w-4 h-4" />
+              <span>Gym</span>
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

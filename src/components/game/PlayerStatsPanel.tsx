@@ -1,16 +1,22 @@
 
-import React from "react";
-import { Shield, Zap, Swords } from "lucide-react";
-import { useGame } from "../../context/GameContext";
-import { Progress } from "../ui/progress";
-import { toast } from "sonner";
+import React from 'react';
+import { useGame } from '../../context/GameContext';
+import { Progress } from '../ui/progress';
+import { Dumbbell, Shield, Zap, Gauge, PillBottle } from 'lucide-react';
+import { toast } from 'sonner';
 
 export const PlayerStatsPanel = () => {
   const { state, dispatch } = useGame();
+  const { playerStats } = state;
   
   const handleTrainAttribute = (attribute: "strength" | "defense" | "speed") => {
-    if (state.playerStats.energy < 1) {
-      toast.error("Not enough energy!");
+    if (playerStats.energy < 1) {
+      toast.error("Not enough energy to train!");
+      return;
+    }
+    
+    if (playerStats.awake <= 0) {
+      toast.error("Too tired to train! Use an Awake Pill to restore alertness.");
       return;
     }
     
@@ -19,112 +25,129 @@ export const PlayerStatsPanel = () => {
       attribute, 
       amount: 1 
     });
-    
-    toast.success(`Trained ${attribute}!`);
   };
   
-  const handleAttackRandom = () => {
-    if (state.playerStats.energy < 3) {
-      toast.error("Not enough energy! Need at least 3 energy to attack.");
+  const handleUseAwakePill = () => {
+    const awakePill = state.consumables.find(c => c.consumableId === "awake_pill");
+    
+    if (!awakePill || awakePill.quantity <= 0) {
+      toast.error("No Awake Pills in inventory!");
       return;
     }
     
-    // Instead of trying to dispatch a non-existent action type,
-    // let's check if there are any players to attack
-    if (state.onlinePlayers.length === 0) {
-      toast.error("No players to attack!");
-      return;
-    }
-    
-    // Find a random player that is in the same city
-    const playersInCity = state.onlinePlayers.filter(
-      p => p.cityId === state.currentCity
-    );
-    
-    if (playersInCity.length === 0) {
-      toast.error("No players in this city to attack!");
-      return;
-    }
-    
-    const randomPlayer = playersInCity[Math.floor(Math.random() * playersInCity.length)];
-    
-    // Use the FIGHT_PLAYER action which exists in the reducer
-    dispatch({ 
-      type: "FIGHT_PLAYER", 
-      targetId: randomPlayer.id 
-    });
-    
-    toast.success(`Attacked ${randomPlayer.name}!`);
+    dispatch({ type: "USE_CONSUMABLE", consumableId: "awake_pill" });
+    toast.success("Used Awake Pill. Alertness restored!");
   };
+  
+  // Calculate percentage of XP progress to next level
+  const expPercentage = (playerStats.exp / playerStats.expToNextLevel) * 100;
+  
+  // Calculate percentage of energy remaining
+  const energyPercentage = (playerStats.energy / playerStats.maxEnergy) * 100;
+  
+  // Calculate percentage of awake remaining
+  const awakePercentage = (playerStats.awake / 10000) * 100;
+  
+  // Get awake pill quantity
+  const awakePillCount = state.consumables.find(c => c.consumableId === "awake_pill")?.quantity || 0;
   
   return (
-    <div className="game-card">
-      <div className="game-header flex items-center gap-2">
-        <img 
-          src="https://placehold.co/40x40/yellow/333" 
-          alt="Player Stats" 
-          className="w-10 h-10 rounded-md object-cover"
-        />
-        <span>PLAYER STATS</span>
-      </div>
+    <div className="p-4 rounded-lg border bg-card text-card-foreground shadow-sm">
+      <h2 className="text-xl font-bold mb-4">Character Stats</h2>
       
-      <div className="game-content grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Strength */}
-        <div className="stat-block">
-          <div className="flex justify-between items-center mb-2">
-            <div className="flex items-center">
-              <Swords className="w-4 h-4 text-orange-500 mr-2" />
-              <span className="font-medium">Strength</span>
-            </div>
-            <span className="text-amber-500 font-bold">{state.playerStats.strength}</span>
+      <div className="space-y-4">
+        <div>
+          <div className="flex justify-between mb-1">
+            <span className="text-sm font-medium">Level {playerStats.level}</span>
+            <span className="text-sm text-muted-foreground">
+              XP: {playerStats.exp}/{playerStats.expToNextLevel}
+            </span>
           </div>
-          <div className="flex items-center justify-between mt-3">
-            <button
-              onClick={() => handleTrainAttribute("strength")}
-              className="w-full bg-black/30 hover:bg-black/50 px-4 py-2 rounded"
-            >
-              Train Strength
+          <Progress value={expPercentage} className="h-2" />
+        </div>
+        
+        <div>
+          <div className="flex justify-between mb-1">
+            <span className="text-sm font-medium">Energy</span>
+            <span className="text-sm text-muted-foreground">
+              {playerStats.energy}/{playerStats.maxEnergy}
+            </span>
+          </div>
+          <Progress value={energyPercentage} className="h-2" />
+        </div>
+        
+        <div>
+          <div className="flex justify-between mb-1">
+            <span className="text-sm font-medium">Alertness</span>
+            <span className="text-sm text-muted-foreground">
+              {Math.round(playerStats.awake / 100)}%
+            </span>
+          </div>
+          <Progress value={awakePercentage} className="h-2" />
+          {awakePillCount > 0 && (
+            <button 
+              onClick={handleUseAwakePill}
+              className="mt-1 text-xs flex items-center gap-1 px-2 py-1 bg-primary text-primary-foreground rounded-md">
+              <PillBottle className="h-3 w-3" />
+              Use Awake Pill ({awakePillCount})
+            </button>
+          )}
+        </div>
+        
+        <div className="grid grid-cols-3 gap-3 pt-2">
+          <div className="flex flex-col items-center p-2 border rounded-md hover:bg-accent/50 cursor-pointer transition-colors" 
+               onClick={() => handleTrainAttribute("strength")}>
+            <Dumbbell className="h-5 w-5 mb-1 text-primary" />
+            <span className="text-sm font-medium">Strength</span>
+            <span className="text-lg font-bold">{playerStats.strength}</span>
+            <button 
+              disabled={playerStats.energy < 1 || playerStats.awake <= 0}
+              className="mt-1 text-xs px-2 py-1 bg-primary text-primary-foreground rounded-md disabled:opacity-50">
+              Train (1 E)
+            </button>
+          </div>
+          
+          <div className="flex flex-col items-center p-2 border rounded-md hover:bg-accent/50 cursor-pointer transition-colors"
+               onClick={() => handleTrainAttribute("defense")}>
+            <Shield className="h-5 w-5 mb-1 text-primary" />
+            <span className="text-sm font-medium">Defense</span>
+            <span className="text-lg font-bold">{playerStats.defense}</span>
+            <button 
+              disabled={playerStats.energy < 1 || playerStats.awake <= 0}
+              className="mt-1 text-xs px-2 py-1 bg-primary text-primary-foreground rounded-md disabled:opacity-50">
+              Train (1 E)
+            </button>
+          </div>
+          
+          <div className="flex flex-col items-center p-2 border rounded-md hover:bg-accent/50 cursor-pointer transition-colors"
+               onClick={() => handleTrainAttribute("speed")}>
+            <Gauge className="h-5 w-5 mb-1 text-primary" />
+            <span className="text-sm font-medium">Speed</span>
+            <span className="text-lg font-bold">{playerStats.speed}</span>
+            <button 
+              disabled={playerStats.energy < 1 || playerStats.awake <= 0}
+              className="mt-1 text-xs px-2 py-1 bg-primary text-primary-foreground rounded-md disabled:opacity-50">
+              Train (1 E)
             </button>
           </div>
         </div>
         
-        {/* Defense */}
-        <div className="stat-block">
-          <div className="flex justify-between items-center mb-2">
-            <div className="flex items-center">
-              <Shield className="w-4 h-4 text-blue-500 mr-2" />
-              <span className="font-medium">Defense</span>
+        {state.lastCombat && (
+          <div className="mt-4 p-3 border rounded-md bg-accent/20">
+            <h3 className="font-medium mb-1">Last Combat</h3>
+            <p className="text-sm">{state.lastCombat.description}</p>
+            <div className="text-sm mt-1">
+              <span className="text-muted-foreground">XP gained: </span>
+              <span className="font-medium">{state.lastCombat.expGained}</span>
+              {state.lastCombat.moneyGained > 0 && (
+                <>
+                  <span className="text-muted-foreground ml-2">Money: </span>
+                  <span className="font-medium">${state.lastCombat.moneyGained}</span>
+                </>
+              )}
             </div>
-            <span className="text-amber-500 font-bold">{state.playerStats.defense}</span>
           </div>
-          <div className="flex items-center justify-between mt-3">
-            <button
-              onClick={() => handleTrainAttribute("defense")}
-              className="w-full bg-black/30 hover:bg-black/50 px-4 py-2 rounded"
-            >
-              Train Defense
-            </button>
-          </div>
-        </div>
-        
-        {/* Speed */}
-        <div className="stat-block">
-          <div className="flex justify-between items-center mb-2">
-            <div className="flex items-center">
-              <Zap className="w-4 h-4 text-yellow-500 mr-2" />
-              <span className="font-medium">Speed</span>
-            </div>
-            <span className="text-amber-500 font-bold">{state.playerStats.speed}</span>
-          </div>
-          <div className="flex items-center justify-between mt-3">
-            <button
-              onClick={() => handleTrainAttribute("speed")}
-              className="w-full bg-black/30 hover:bg-black/50 px-4 py-2 rounded"
-            >
-              Train Speed
-            </button>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
