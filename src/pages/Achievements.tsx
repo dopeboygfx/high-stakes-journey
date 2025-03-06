@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Trophy } from 'lucide-react';
 import { AchievementsPanel } from '../components/game/AchievementsPanel';
+import { Button } from '../components/ui/button';
 
 const Achievements = () => {
   return (
@@ -22,13 +23,12 @@ const Achievements = () => {
       </div>
       
       <div className="flex justify-center mt-3">
-        <Link
-          to="/"
-          className="flex items-center px-3 py-1.5 bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors text-sm"
-        >
-          <Trophy className="mr-1.5 h-3.5 w-3.5" />
-          Back to Game
-        </Link>
+        <Button asChild size="sm" className="h-8">
+          <Link to="/" className="flex items-center">
+            <Trophy className="mr-1.5 h-3.5 w-3.5" />
+            Back to Game
+          </Link>
+        </Button>
       </div>
     </div>
   );

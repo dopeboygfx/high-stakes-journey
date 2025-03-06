@@ -6,6 +6,7 @@ import {
   Trophy, Coins, Map, Swords, Flame, Banknote, Dumbbell 
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Button } from '../ui/button';
 
 const achievementIcons: Record<string, any> = {
   coins: Coins,
@@ -105,12 +106,14 @@ export const AchievementsPanel = () => {
                   <h3 className="font-medium text-xs">{achievement.name}</h3>
                 </div>
                 {achievement.completed && !achievement.claimed && (
-                  <button 
+                  <Button 
                     onClick={() => claimReward(achievement.id)}
-                    className="text-[10px] px-1.5 py-0.5 bg-yellow-500 text-yellow-950 rounded hover:bg-yellow-600 transition-colors"
+                    className="h-5 text-[10px] px-1.5 py-0.5"
+                    variant="outline"
+                    size="sm"
                   >
                     Claim
-                  </button>
+                  </Button>
                 )}
                 {achievement.claimed && (
                   <span className="text-[10px] text-green-500 font-medium">Claimed</span>

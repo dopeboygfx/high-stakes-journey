@@ -5,6 +5,7 @@ import { CONSUMABLES } from '../../constants/gameData';
 import { PillBottle, Beaker, Dumbbell, Shield, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatMoney } from '../../utils/gameUtils';
+import { Button } from '../ui/button';
 
 const consumableIcons: Record<string, any> = {
   awake_pill: PillBottle,
@@ -68,12 +69,14 @@ export const ConsumablesShop = () => {
               
               <div className="flex flex-col items-end gap-1">
                 <span className="text-xs font-medium">{formatMoney(consumable.price)}</span>
-                <button
+                <Button
                   onClick={() => handleBuyConsumable(consumable.id, 1)}
-                  className="text-[10px] px-2 py-0.5 bg-primary text-primary-foreground rounded hover:bg-primary/90"
+                  className="h-6 px-2 py-1 text-[10px]"
+                  variant="default"
+                  size="sm"
                 >
                   Buy
-                </button>
+                </Button>
               </div>
             </div>
           );

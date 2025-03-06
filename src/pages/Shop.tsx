@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, ShoppingBag } from 'lucide-react';
 import { ConsumablesShop } from '../components/game/ConsumablesShop';
 import { VehicleShop } from '../components/game/VehicleShop';
+import { Button } from '../components/ui/button';
 
 const Shop = () => {
   return (
@@ -24,13 +25,12 @@ const Shop = () => {
       </div>
       
       <div className="flex justify-center mt-3">
-        <Link
-          to="/"
-          className="flex items-center px-3 py-1.5 bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors text-sm"
-        >
-          <ShoppingBag className="mr-1.5 h-3.5 w-3.5" />
-          Back to Game
-        </Link>
+        <Button asChild size="sm" className="h-8">
+          <Link to="/" className="flex items-center">
+            <ShoppingBag className="mr-1.5 h-3.5 w-3.5" />
+            Back to Game
+          </Link>
+        </Button>
       </div>
     </div>
   );

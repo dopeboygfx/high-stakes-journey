@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useGame } from "../../context/GameContext";
 import { VEHICLES } from "../../constants/gameData";
 import { formatMoney } from "../../utils/gameUtils";
+import { Button } from "../ui/button";
 
 export const VehicleShop = () => {
   const { state, dispatch } = useGame();
@@ -32,33 +33,37 @@ export const VehicleShop = () => {
       <h2 className="text-base font-bold mb-2">Vehicle Shop</h2>
       <div className="grid gap-2">
         {VEHICLES.map((vehicle) => (
-          <button
+          <div
             key={vehicle.id}
-            onClick={() => handleBuyVehicle(vehicle.id)}
-            disabled={vehicle.id === state.currentVehicle}
-            className={`p-3 rounded-lg border text-left transition-all ${
+            className={`p-3 rounded-lg border flex justify-between items-center ${
               vehicle.id === state.currentVehicle
-                ? "bg-card/50 border-border/50 cursor-default"
-                : "bg-card hover:border-border/80 hover:translate-y-[-2px]"
+                ? "bg-card/50 border-border/50"
+                : "bg-card"
             }`}
           >
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-medium text-xs">{vehicle.name}</h3>
-                <p className="text-xs text-muted-foreground">
-                  {vehicle.description}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Speed: {vehicle.speed}x • Price: {formatMoney(vehicle.price)}
-                </p>
-              </div>
-              {vehicle.id === state.currentVehicle ? (
-                <span className="text-xs text-game-success">Current Vehicle</span>
-              ) : (
-                <Car className="w-4 h-4 text-muted-foreground" />
-              )}
+            <div>
+              <h3 className="font-medium text-xs">{vehicle.name}</h3>
+              <p className="text-xs text-muted-foreground">
+                {vehicle.description}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Speed: {vehicle.speed}x • Price: {formatMoney(vehicle.price)}
+              </p>
             </div>
-          </button>
+            {vehicle.id === state.currentVehicle ? (
+              <span className="text-xs text-game-success px-2 py-1 border border-game-success/30 rounded">Current Vehicle</span>
+            ) : (
+              <Button
+                onClick={() => handleBuyVehicle(vehicle.id)}
+                className="h-8 text-xs"
+                variant="default"
+                size="sm"
+              >
+                <Car className="mr-1 w-3 h-3" />
+                Purchase
+              </Button>
+            )}
+          </div>
         ))}
       </div>
     </div>

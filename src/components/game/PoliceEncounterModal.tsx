@@ -3,6 +3,7 @@ import React from 'react';
 import { Shield, ArrowRight, Swords, HandCoins } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
 import { toast } from 'sonner';
+import { Button } from '../ui/button';
 
 const outcomeIcons = {
   bribe: HandCoins,
@@ -66,15 +67,12 @@ export const PoliceEncounterModal = () => {
               (option.requiredAttribute && playerStats[option.requiredAttribute.type] < option.requiredAttribute.value);
             
             return (
-              <button
+              <Button
                 key={index}
                 onClick={() => handleResolveEncounter(index)}
                 disabled={disabled}
-                className={`w-full p-3 flex items-center justify-between rounded-md border ${
-                  disabled 
-                    ? 'bg-card/50 cursor-not-allowed opacity-50' 
-                    : 'bg-card hover:bg-accent/50 hover:border-accent transition-colors'
-                }`}
+                variant="outline"
+                className="w-full p-3 h-auto justify-between"
               >
                 <div className="flex items-center gap-3">
                   <Icon className="h-5 w-5 text-primary" />
@@ -100,7 +98,7 @@ export const PoliceEncounterModal = () => {
                     Success: {Math.round(option.successChance * 100)}%
                   </span>
                 </div>
-              </button>
+              </Button>
             );
           })}
         </div>

@@ -4,6 +4,7 @@ import { useGame } from '../../context/GameContext';
 import { Progress } from '../ui/progress';
 import { Dumbbell, Shield, Zap, Gauge, PillBottle } from 'lucide-react';
 import { toast } from 'sonner';
+import { Button } from '../ui/button';
 
 export const PlayerStatsPanel = () => {
   const { state, dispatch } = useGame();
@@ -85,50 +86,62 @@ export const PlayerStatsPanel = () => {
           </div>
           <Progress value={awakePercentage} className="h-1.5" />
           {awakePillCount > 0 && (
-            <button 
+            <Button 
               onClick={handleUseAwakePill}
-              className="mt-0.5 text-[10px] flex items-center gap-0.5 px-1.5 py-0.5 bg-primary text-primary-foreground rounded">
-              <PillBottle className="h-2.5 w-2.5" />
+              className="mt-0.5 h-5 text-[10px] px-1.5 py-0.5"
+              variant="outline"
+              size="sm"
+            >
+              <PillBottle className="mr-1 h-2.5 w-2.5" />
               Use Awake Pill ({awakePillCount})
-            </button>
+            </Button>
           )}
         </div>
         
         <div className="grid grid-cols-3 gap-1 pt-1">
-          <div className="flex flex-col items-center p-1 border rounded hover:bg-accent/50 cursor-pointer transition-colors" 
-               onClick={() => handleTrainAttribute("strength")}>
+          <div className="flex flex-col items-center p-1 border rounded transition-colors"> 
             <Dumbbell className="h-4 w-4 mb-0.5 text-primary" />
             <span className="text-xs font-medium">Strength</span>
             <span className="text-sm font-bold">{playerStats.strength}</span>
-            <button 
+            <Button 
+              onClick={() => handleTrainAttribute("strength")}
               disabled={playerStats.energy < 1 || playerStats.awake <= 0}
-              className="mt-0.5 text-[10px] px-1.5 py-0.5 bg-primary text-primary-foreground rounded disabled:opacity-50">
+              className="mt-0.5 h-5 text-[10px] px-1.5 py-0.5"
+              variant="default"
+              size="sm"
+            >
               Train
-            </button>
+            </Button>
           </div>
           
-          <div className="flex flex-col items-center p-1 border rounded hover:bg-accent/50 cursor-pointer transition-colors"
-               onClick={() => handleTrainAttribute("defense")}>
+          <div className="flex flex-col items-center p-1 border rounded transition-colors">
             <Shield className="h-4 w-4 mb-0.5 text-primary" />
             <span className="text-xs font-medium">Defense</span>
             <span className="text-sm font-bold">{playerStats.defense}</span>
-            <button 
+            <Button 
+              onClick={() => handleTrainAttribute("defense")}
               disabled={playerStats.energy < 1 || playerStats.awake <= 0}
-              className="mt-0.5 text-[10px] px-1.5 py-0.5 bg-primary text-primary-foreground rounded disabled:opacity-50">
+              className="mt-0.5 h-5 text-[10px] px-1.5 py-0.5"
+              variant="default"
+              size="sm"
+            >
               Train
-            </button>
+            </Button>
           </div>
           
-          <div className="flex flex-col items-center p-1 border rounded hover:bg-accent/50 cursor-pointer transition-colors"
-               onClick={() => handleTrainAttribute("speed")}>
+          <div className="flex flex-col items-center p-1 border rounded transition-colors">
             <Gauge className="h-4 w-4 mb-0.5 text-primary" />
             <span className="text-xs font-medium">Speed</span>
             <span className="text-sm font-bold">{playerStats.speed}</span>
-            <button 
+            <Button 
+              onClick={() => handleTrainAttribute("speed")}
               disabled={playerStats.energy < 1 || playerStats.awake <= 0}
-              className="mt-0.5 text-[10px] px-1.5 py-0.5 bg-primary text-primary-foreground rounded disabled:opacity-50">
+              className="mt-0.5 h-5 text-[10px] px-1.5 py-0.5"
+              variant="default"
+              size="sm"
+            >
               Train
-            </button>
+            </Button>
           </div>
         </div>
         

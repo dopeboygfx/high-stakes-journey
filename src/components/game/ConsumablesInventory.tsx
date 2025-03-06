@@ -4,6 +4,7 @@ import { useGame } from '../../context/GameContext';
 import { CONSUMABLES } from '../../constants/gameData';
 import { PillBottle, Beaker, Dumbbell, Shield, Zap } from 'lucide-react';
 import { toast } from 'sonner';
+import { Button } from '../ui/button';
 
 const consumableIcons: Record<string, any> = {
   awake_pill: PillBottle,
@@ -67,12 +68,14 @@ export const ConsumablesInventory = () => {
               
               <div className="flex items-center gap-1.5">
                 <span className="text-xs font-medium">×{item.quantity}</span>
-                <button
+                <Button
                   onClick={() => handleUseConsumable(item.consumableId)}
-                  className="px-1.5 py-0.5 text-[10px] bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
+                  className="h-6 px-2 py-0.5 text-[10px]"
+                  variant="default"
+                  size="sm"
                 >
                   Use
-                </button>
+                </Button>
               </div>
             </div>
           );

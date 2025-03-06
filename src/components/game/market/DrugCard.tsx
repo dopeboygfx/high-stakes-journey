@@ -2,6 +2,7 @@
 import { ArrowUp, ArrowDown } from "lucide-react";
 import { Drug } from "../../../types/game";
 import { formatMoney } from "../../../utils/gameUtils";
+import { Button } from "../../ui/button";
 
 type DrugCardProps = {
   drug: Drug;
@@ -39,34 +40,42 @@ export const DrugCard = ({
         </div>
         <div className="flex items-center space-x-2">
           <div className="flex flex-col space-y-1">
-            <button
+            <Button
               onClick={() => onBuy(drug.id, 1)}
-              className="px-2 py-1 bg-game-success text-white rounded text-xs hover:opacity-90 transition-opacity"
+              className="h-6 px-2 py-1 text-xs"
+              variant="default"
+              size="sm"
             >
               Buy
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => onBuy(drug.id, -1)}
-              className="px-2 py-1 bg-game-success/80 text-white rounded text-xs hover:opacity-90 transition-opacity flex items-center justify-center gap-1"
+              className="h-6 px-2 py-1 text-xs"
+              variant="secondary"
+              size="sm"
               title="Buy Maximum Affordable Amount"
             >
-              Max <ArrowUp className="w-3 h-3" />
-            </button>
+              Max <ArrowUp className="ml-1 w-3 h-3" />
+            </Button>
           </div>
           <div className="flex flex-col space-y-1">
-            <button
+            <Button
               onClick={() => onSell(drug.id, 1)}
-              className="px-2 py-1 bg-game-risk text-white rounded text-xs hover:opacity-90 transition-opacity"
+              className="h-6 px-2 py-1 text-xs"
+              variant="destructive"
+              size="sm"
             >
               Sell
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => onSell(drug.id, -1)}
-              className="px-2 py-1 bg-game-risk/80 text-white rounded text-xs hover:opacity-90 transition-opacity flex items-center justify-center gap-1"
+              className="h-6 px-2 py-1 text-xs"
+              variant="secondary"
+              size="sm"
               title="Sell All Units"
             >
-              Max <ArrowDown className="w-3 h-3" />
-            </button>
+              Max <ArrowDown className="ml-1 w-3 h-3" />
+            </Button>
           </div>
         </div>
       </div>
