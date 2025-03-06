@@ -7,11 +7,11 @@ import { VehicleShop } from '../components/game/VehicleShop';
 
 const Shop = () => {
   return (
-    <div className="container mx-auto p-2 space-y-3">
-      <div className="flex items-center gap-2">
+    <div className="container mx-auto p-3 space-y-3">
+      <div className="flex items-center gap-3">
         <Link
           to="/"
-          className="p-1 hover:bg-accent rounded-full transition-colors"
+          className="p-1.5 hover:bg-accent rounded-full transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
@@ -23,7 +23,7 @@ const Shop = () => {
         <VehicleShop />
       </div>
       
-      <div className="flex justify-center mt-4">
+      <div className="flex justify-center mt-3">
         <Link
           to="/"
           className="flex items-center px-3 py-1.5 bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors text-sm"

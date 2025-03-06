@@ -28,15 +28,15 @@ export const VehicleShop = () => {
   const currentVehicle = VEHICLES.find(v => v.id === state.currentVehicle)!;
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-2xl font-semibold">Vehicle Shop</h2>
-      <div className="grid gap-4">
+    <div className="p-2 rounded-lg border bg-card text-sm">
+      <h2 className="text-base font-bold mb-2">Vehicle Shop</h2>
+      <div className="grid gap-2">
         {VEHICLES.map((vehicle) => (
           <button
             key={vehicle.id}
             onClick={() => handleBuyVehicle(vehicle.id)}
             disabled={vehicle.id === state.currentVehicle}
-            className={`p-4 rounded-lg border text-left transition-all ${
+            className={`p-3 rounded-lg border text-left transition-all ${
               vehicle.id === state.currentVehicle
                 ? "bg-card/50 border-border/50 cursor-default"
                 : "bg-card hover:border-border/80 hover:translate-y-[-2px]"
@@ -44,18 +44,18 @@ export const VehicleShop = () => {
           >
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-medium">{vehicle.name}</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="font-medium text-xs">{vehicle.name}</h3>
+                <p className="text-xs text-muted-foreground">
                   {vehicle.description}
                 </p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   Speed: {vehicle.speed}x • Price: {formatMoney(vehicle.price)}
                 </p>
               </div>
               {vehicle.id === state.currentVehicle ? (
-                <span className="text-sm text-game-success">Current Vehicle</span>
+                <span className="text-xs text-game-success">Current Vehicle</span>
               ) : (
-                <Car className="w-5 h-5 text-muted-foreground" />
+                <Car className="w-4 h-4 text-muted-foreground" />
               )}
             </div>
           </button>

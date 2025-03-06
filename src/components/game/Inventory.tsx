@@ -15,7 +15,7 @@ export const Inventory = () => {
             return (
               <div
                 key={item.drugId}
-                className="flex justify-between items-center"
+                className="flex justify-between items-center p-1 bg-background/40 rounded"
               >
                 <span className="text-xs">{drug.name}</span>
                 <span className="text-xs text-muted-foreground">
@@ -26,7 +26,7 @@ export const Inventory = () => {
           })}
         </div>
       ) : (
-        <p className="text-xs text-muted-foreground">Your inventory is empty</p>
+        <p className="text-xs text-muted-foreground p-1">Your inventory is empty</p>
       )}
     </div>
   );
