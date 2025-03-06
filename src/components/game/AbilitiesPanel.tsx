@@ -28,21 +28,21 @@ export const AbilitiesPanel = () => {
   };
 
   return (
-    <div className="p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50">
-      <h2 className="text-xl font-semibold mb-4">Abilities</h2>
-      <div className="grid gap-4">
+    <div className="p-2 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 text-sm">
+      <h2 className="text-base font-semibold mb-2">Abilities</h2>
+      <div className="grid gap-2">
         {state.abilities.map((ability) => {
           const Icon = abilityIcons[ability.id];
           return (
             <div
               key={ability.id}
-              className="flex items-center justify-between p-3 rounded-lg border bg-background/50"
+              className="flex items-center justify-between p-2 rounded-lg border bg-background/50"
             >
-              <div className="flex items-center gap-3">
-                <Icon className="w-5 h-5 text-muted-foreground" />
+              <div className="flex items-center gap-2">
+                <Icon className="w-4 h-4 text-muted-foreground" />
                 <div>
-                  <h3 className="font-medium">{ability.name}</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <h3 className="text-xs font-medium">{ability.name}</h3>
+                  <p className="text-[10px] text-muted-foreground">
                     {ability.description}
                   </p>
                 </div>
@@ -50,13 +50,13 @@ export const AbilitiesPanel = () => {
               {!ability.unlocked && (
                 <button
                   onClick={() => handleUnlockAbility(ability.id)}
-                  className="px-3 py-1 text-sm rounded-md bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+                  className="px-2 py-0.5 text-[10px] rounded bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
                 >
                   {formatMoney(ability.cost)}
                 </button>
               )}
               {ability.unlocked && (
-                <span className="text-sm text-success">Unlocked</span>
+                <span className="text-[10px] text-success">Unlocked</span>
               )}
             </div>
           );

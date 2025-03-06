@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useGame } from '../../context/GameContext';
 import { CONSUMABLES } from '../../constants/gameData';
@@ -40,36 +41,36 @@ export const ConsumablesShop = () => {
   };
   
   return (
-    <div className="p-4 rounded-lg border bg-card">
-      <h2 className="text-xl font-bold mb-4">Premium Supplies</h2>
+    <div className="p-2 rounded-lg border bg-card text-sm">
+      <h2 className="text-base font-bold mb-2">Premium Supplies</h2>
       
-      <div className="grid gap-4">
+      <div className="grid gap-2">
         {CONSUMABLES.map((consumable) => {
           const Icon = consumableIcons[consumable.id] || Beaker;
           const count = getConsumableCount(consumable.id);
           
           return (
-            <div key={consumable.id} className="p-4 border rounded-md flex items-center justify-between bg-background">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 flex items-center justify-center bg-primary/10 rounded-full">
-                  <Icon className="w-5 h-5 text-primary" />
+            <div key={consumable.id} className="p-2 border rounded flex items-center justify-between bg-background">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 flex items-center justify-center bg-primary/10 rounded-full">
+                  <Icon className="w-3.5 h-3.5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-medium">{consumable.name}</h3>
-                  <p className="text-sm text-muted-foreground">{consumable.description}</p>
+                  <h3 className="text-xs font-medium">{consumable.name}</h3>
+                  <p className="text-[10px] text-muted-foreground">{consumable.description}</p>
                   {count > 0 && (
-                    <span className="text-xs font-medium text-primary">
+                    <span className="text-[10px] font-medium text-primary">
                       In inventory: {count}
                     </span>
                   )}
                 </div>
               </div>
               
-              <div className="flex flex-col items-end gap-2">
-                <span className="font-medium">{formatMoney(consumable.price)}</span>
+              <div className="flex flex-col items-end gap-1">
+                <span className="text-xs font-medium">{formatMoney(consumable.price)}</span>
                 <button
                   onClick={() => handleBuyConsumable(consumable.id, 1)}
-                  className="text-xs px-3 py-1 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+                  className="text-[10px] px-2 py-0.5 bg-primary text-primary-foreground rounded hover:bg-primary/90"
                 >
                   Buy
                 </button>

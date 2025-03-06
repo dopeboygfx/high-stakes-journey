@@ -26,49 +26,49 @@ export const FloatingStatusBar = () => {
   const heatColor = state.heat > 70 ? "text-red-500" : "text-white";
   
   const navItems = [
-    { path: "/", icon: <Home className="w-5 h-5" />, label: "Home" },
-    { path: "/shop", icon: <ShoppingBag className="w-5 h-5" />, label: "Shop" },
-    { path: "/explore", icon: <Map className="w-5 h-5" />, label: "Explore" },
-    { path: "/gym", icon: <Dumbbell className="w-5 h-5" />, label: "Gym" },
-    { path: "/achievements", icon: <Trophy className="w-5 h-5" />, label: "Achievements" },
+    { path: "/", icon: <Home className="w-4 h-4" />, label: "Home" },
+    { path: "/shop", icon: <ShoppingBag className="w-4 h-4" />, label: "Shop" },
+    { path: "/explore", icon: <Map className="w-4 h-4" />, label: "Explore" },
+    { path: "/gym", icon: <Dumbbell className="w-4 h-4" />, label: "Gym" },
+    { path: "/achievements", icon: <Trophy className="w-4 h-4" />, label: "Achievements" },
   ];
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border shadow-lg z-50">
-      {/* Status Bar - Now more compact */}
-      <div className="py-1 px-2 bg-card border-b border-border text-xs">
+      {/* Status Bar - Super compact */}
+      <div className="py-0.5 px-1 bg-card border-b border-border text-[10px]">
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-1">
-            <MapPin className="w-3 h-3" />
+          <div className="flex items-center gap-0.5">
+            <MapPin className="w-2.5 h-2.5" />
             <span>{currentCity.name}</span>
           </div>
           
-          <div className="flex items-center gap-1">
-            <DollarSign className="w-3 h-3 text-game-success" />
+          <div className="flex items-center gap-0.5">
+            <DollarSign className="w-2.5 h-2.5 text-game-success" />
             <span>{formatMoney(state.money)}</span>
           </div>
           
-          <div className="flex items-center gap-1">
-            <Gauge className="w-3 h-3" />
+          <div className="flex items-center gap-0.5">
+            <Gauge className="w-2.5 h-2.5" />
             <span>Lvl {state.playerStats.level}</span>
           </div>
           
-          <div className="flex items-center gap-1 w-16">
+          <div className="flex items-center gap-0.5 w-14">
             <span>E:</span>
             <Progress value={energyPercentage} className="h-1" />
-            <span className="text-[10px]">{state.playerStats.energy}</span>
+            <span className="text-[9px]">{state.playerStats.energy}</span>
           </div>
           
-          <div className="flex items-center gap-1">
-            <AlertCircle className={`w-3 h-3 ${heatColor} ${state.heat > 70 ? "animate-pulse" : ""}`} />
+          <div className="flex items-center gap-0.5">
+            <AlertCircle className={`w-2.5 h-2.5 ${heatColor} ${state.heat > 70 ? "animate-pulse" : ""}`} />
             <span className={`${heatColor}`}>{state.heat}%</span>
           </div>
         </div>
       </div>
       
-      {/* Navigation - More compact */}
-      <nav className="bg-background py-1">
-        <div className="container mx-auto px-2">
+      {/* Navigation - Super compact */}
+      <nav className="bg-background py-0.5">
+        <div className="container mx-auto px-1">
           <ul className="flex justify-between items-center">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
@@ -76,14 +76,14 @@ export const FloatingStatusBar = () => {
                 <li key={item.path}>
                   <Link
                     to={item.path}
-                    className={`flex flex-col items-center py-1 px-2 rounded-md transition-colors ${
+                    className={`flex flex-col items-center py-0.5 px-1.5 rounded-md transition-colors ${
                       isActive 
                         ? "text-primary" 
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     {item.icon}
-                    <span className="text-[10px]">{item.label}</span>
+                    <span className="text-[8px]">{item.label}</span>
                   </Link>
                 </li>
               );

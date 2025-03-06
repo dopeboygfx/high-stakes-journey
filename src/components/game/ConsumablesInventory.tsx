@@ -35,18 +35,18 @@ export const ConsumablesInventory = () => {
   
   if (playerConsumables.length === 0) {
     return (
-      <div className="p-4 rounded-lg border bg-card">
-        <h2 className="text-xl font-bold mb-4">Inventory</h2>
-        <p className="text-muted-foreground text-center py-4">No consumables in inventory</p>
+      <div className="p-2 rounded-lg border bg-card text-sm">
+        <h2 className="text-base font-semibold mb-1.5">Inventory</h2>
+        <p className="text-xs text-muted-foreground text-center py-2">No consumables in inventory</p>
       </div>
     );
   }
   
   return (
-    <div className="p-4 rounded-lg border bg-card">
-      <h2 className="text-xl font-bold mb-4">Consumables</h2>
+    <div className="p-2 rounded-lg border bg-card text-sm">
+      <h2 className="text-base font-semibold mb-1.5">Consumables</h2>
       
-      <div className="grid gap-3">
+      <div className="grid gap-1.5">
         {playerConsumables.map((item) => {
           const consumable = CONSUMABLES.find(c => c.id === item.consumableId);
           if (!consumable) return null;
@@ -54,22 +54,22 @@ export const ConsumablesInventory = () => {
           const Icon = consumableIcons[consumable.id] || Beaker;
           
           return (
-            <div key={item.consumableId} className="flex items-center justify-between p-3 border rounded-md bg-background/50">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 flex items-center justify-center bg-primary/10 rounded-full">
-                  <Icon className="w-4 h-4 text-primary" />
+            <div key={item.consumableId} className="flex items-center justify-between p-1.5 border rounded bg-background/50">
+              <div className="flex items-center gap-1.5">
+                <div className="w-6 h-6 flex items-center justify-center bg-primary/10 rounded-full">
+                  <Icon className="w-3 h-3 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-medium">{consumable.name}</h3>
-                  <p className="text-xs text-muted-foreground">{consumable.description}</p>
+                  <h3 className="text-xs font-medium">{consumable.name}</h3>
+                  <p className="text-[10px] text-muted-foreground">{consumable.description}</p>
                 </div>
               </div>
               
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-medium">×{item.quantity}</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-medium">×{item.quantity}</span>
                 <button
                   onClick={() => handleUseConsumable(item.consumableId)}
-                  className="px-2 py-1 text-xs bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
+                  className="px-1.5 py-0.5 text-[10px] bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
                 >
                   Use
                 </button>

@@ -24,33 +24,33 @@ const Index = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
+    <div className="container mx-auto p-2 space-y-3">
       <GameHeader />
       <PoliceEncounterModal />
 
       <Tabs defaultValue="market" className="w-full">
-        <TabsList className="grid grid-cols-4 mb-4">
-          <TabsTrigger value="market" className="flex items-center gap-2">
-            <ShoppingBag className="w-4 h-4" />
+        <TabsList className="grid grid-cols-4 mb-2">
+          <TabsTrigger value="market" className="flex items-center gap-1 text-xs py-1">
+            <ShoppingBag className="w-3 h-3" />
             <span>Drug Market</span>
           </TabsTrigger>
-          <TabsTrigger value="travel" className="flex items-center gap-2">
-            <Map className="w-4 h-4" />
+          <TabsTrigger value="travel" className="flex items-center gap-1 text-xs py-1">
+            <Map className="w-3 h-3" />
             <span>Travel</span>
           </TabsTrigger>
-          <TabsTrigger value="store" className="flex items-center gap-2">
-            <Store className="w-4 h-4" />
+          <TabsTrigger value="store" className="flex items-center gap-1 text-xs py-1">
+            <Store className="w-3 h-3" />
             <span>Vehicle Shop</span>
           </TabsTrigger>
-          <TabsTrigger value="abilities" className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4" />
+          <TabsTrigger value="abilities" className="flex items-center gap-1 text-xs py-1">
+            <Sparkles className="w-3 h-3" />
             <span>Abilities</span>
           </TabsTrigger>
         </TabsList>
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
           {/* Left column - Player stats & inventory (always visible) */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             <PlayerStatsPanel />
             <ConsumablesInventory />
             <Inventory />
@@ -66,14 +66,14 @@ const Index = () => {
               <TravelOptions />
             </TabsContent>
             
-            <TabsContent value="store" className="mt-0 space-y-6">
+            <TabsContent value="store" className="mt-0 space-y-3">
               <VehicleDisplay />
-              <div className="pt-4">
+              <div className="pt-2">
                 <Link
                   to="/shop"
-                  className="inline-flex items-center justify-center gap-2 p-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                  className="inline-flex items-center justify-center gap-1 p-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-xs"
                 >
-                  <ShoppingBag className="w-4 h-4" />
+                  <ShoppingBag className="w-3 h-3" />
                   <span>Full Shop</span>
                 </Link>
               </div>
@@ -87,33 +87,33 @@ const Index = () => {
       </Tabs>
       
       {/* Quick links */}
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-4 gap-2">
         <Link
           to="/shop"
-          className="flex items-center justify-center gap-2 p-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+          className="flex items-center justify-center gap-1 p-1.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-xs"
         >
-          <ShoppingBag className="w-4 h-4" />
+          <ShoppingBag className="w-3 h-3" />
           <span>Shop</span>
         </Link>
         <Link
           to="/achievements"
-          className="flex items-center justify-center gap-2 p-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+          className="flex items-center justify-center gap-1 p-1.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-xs"
         >
-          <Trophy className="w-4 h-4" />
+          <Trophy className="w-3 h-3" />
           <span>Achievements</span>
         </Link>
         <Link
           to="/explore"
-          className="flex items-center justify-center gap-2 p-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+          className="flex items-center justify-center gap-1 p-1.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-xs"
         >
-          <Map className="w-4 h-4" />
+          <Map className="w-3 h-3" />
           <span>Explore</span>
         </Link>
         <Link
           to="/gym"
-          className="flex items-center justify-center gap-2 p-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+          className="flex items-center justify-center gap-1 p-1.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-xs"
         >
-          <Dumbbell className="w-4 h-4" />
+          <Dumbbell className="w-3 h-3" />
           <span>Gym</span>
         </Link>
       </div>

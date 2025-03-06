@@ -79,13 +79,13 @@ export const AchievementsPanel = () => {
   });
   
   return (
-    <div className="p-4 rounded-lg border bg-card">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold">Achievements</h2>
-        <Trophy className="h-5 w-5 text-yellow-500" />
+    <div className="p-2 rounded-lg border bg-card text-sm">
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="text-base font-bold">Achievements</h2>
+        <Trophy className="h-4 w-4 text-yellow-500" />
       </div>
       
-      <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
+      <div className="space-y-1.5 max-h-96 overflow-y-auto pr-1">
         {sortedAchievements.map((achievement) => {
           const Icon = achievementIcons[achievement.icon] || Trophy;
           const progressPercent = Math.min(100, (achievement.progress / achievement.requirement) * 100);
@@ -93,35 +93,35 @@ export const AchievementsPanel = () => {
           return (
             <div 
               key={achievement.id} 
-              className={`p-3 border rounded-md ${achievement.completed && !achievement.claimed 
+              className={`p-1.5 border rounded-md text-xs ${achievement.completed && !achievement.claimed 
                 ? 'border-yellow-500 bg-yellow-500/10' 
                 : achievement.claimed 
                   ? 'border-green-500/30 bg-green-500/5 opacity-80' 
                   : 'bg-card/50'}`}
             >
-              <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center gap-2">
-                  <Icon className={`h-4 w-4 ${achievement.completed ? 'text-yellow-500' : 'text-muted-foreground'}`} />
-                  <h3 className="font-medium text-sm">{achievement.name}</h3>
+              <div className="flex items-center justify-between mb-0.5">
+                <div className="flex items-center gap-1">
+                  <Icon className={`h-3 w-3 ${achievement.completed ? 'text-yellow-500' : 'text-muted-foreground'}`} />
+                  <h3 className="font-medium text-xs">{achievement.name}</h3>
                 </div>
                 {achievement.completed && !achievement.claimed && (
                   <button 
                     onClick={() => claimReward(achievement.id)}
-                    className="text-xs px-2 py-0.5 bg-yellow-500 text-yellow-950 rounded hover:bg-yellow-600 transition-colors"
+                    className="text-[10px] px-1.5 py-0.5 bg-yellow-500 text-yellow-950 rounded hover:bg-yellow-600 transition-colors"
                   >
                     Claim
                   </button>
                 )}
                 {achievement.claimed && (
-                  <span className="text-xs text-green-500 font-medium">Claimed</span>
+                  <span className="text-[10px] text-green-500 font-medium">Claimed</span>
                 )}
               </div>
               
-              <p className="text-xs text-muted-foreground mb-2">{achievement.description}</p>
+              <p className="text-[10px] text-muted-foreground mb-1">{achievement.description}</p>
               
-              <div className="flex items-center gap-2">
-                <Progress value={progressPercent} className="h-1.5 flex-1" />
-                <span className="text-xs text-muted-foreground whitespace-nowrap">
+              <div className="flex items-center gap-1">
+                <Progress value={progressPercent} className="h-1 flex-1" />
+                <span className="text-[10px] text-muted-foreground whitespace-nowrap">
                   {achievement.progress}/{achievement.requirement}
                 </span>
               </div>
