@@ -20,7 +20,7 @@ const App = () => (
     <GameProvider>
       <TooltipProvider>
         <BrowserRouter>
-          <div className="pb-24"> {/* Increased padding at the bottom for the new floating navigation */}
+          <div className="pb-20"> {/* Reduced padding to match smaller navigation bar */}
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/shop" element={<Shop />} />
