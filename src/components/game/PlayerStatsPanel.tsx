@@ -2,31 +2,13 @@
 import React from 'react';
 import { useGame } from '../../context/GameContext';
 import { Progress } from '../ui/progress';
-import { Dumbbell, Shield, Zap, Gauge, PillBottle } from 'lucide-react';
+import { Dumbbell, Shield, Gauge, PillBottle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '../ui/button';
 
 export const PlayerStatsPanel = () => {
   const { state, dispatch } = useGame();
   const { playerStats } = state;
-  
-  const handleTrainAttribute = (attribute: "strength" | "defense" | "speed") => {
-    if (playerStats.energy < 1) {
-      toast.error("Not enough energy to train!");
-      return;
-    }
-    
-    if (playerStats.awake <= 0) {
-      toast.error("Too tired to train! Use an Awake Pill to restore alertness.");
-      return;
-    }
-    
-    dispatch({ 
-      type: "TRAIN_ATTRIBUTE", 
-      attribute, 
-      amount: 1 
-    });
-  };
   
   const handleUseAwakePill = () => {
     const awakePill = state.consumables.find(c => c.consumableId === "awake_pill");
@@ -103,45 +85,18 @@ export const PlayerStatsPanel = () => {
             <Dumbbell className="h-4 w-4 mb-0.5 text-primary" />
             <span className="text-xs font-medium">Strength</span>
             <span className="text-sm font-bold">{playerStats.strength}</span>
-            <Button 
-              onClick={() => handleTrainAttribute("strength")}
-              disabled={playerStats.energy < 1 || playerStats.awake <= 0}
-              className="mt-0.5 h-5 text-[10px] px-1.5 py-0.5"
-              variant="default"
-              size="sm"
-            >
-              Train
-            </Button>
           </div>
           
           <div className="flex flex-col items-center p-1 border rounded transition-colors">
             <Shield className="h-4 w-4 mb-0.5 text-primary" />
             <span className="text-xs font-medium">Defense</span>
             <span className="text-sm font-bold">{playerStats.defense}</span>
-            <Button 
-              onClick={() => handleTrainAttribute("defense")}
-              disabled={playerStats.energy < 1 || playerStats.awake <= 0}
-              className="mt-0.5 h-5 text-[10px] px-1.5 py-0.5"
-              variant="default"
-              size="sm"
-            >
-              Train
-            </Button>
           </div>
           
           <div className="flex flex-col items-center p-1 border rounded transition-colors">
             <Gauge className="h-4 w-4 mb-0.5 text-primary" />
             <span className="text-xs font-medium">Speed</span>
             <span className="text-sm font-bold">{playerStats.speed}</span>
-            <Button 
-              onClick={() => handleTrainAttribute("speed")}
-              disabled={playerStats.energy < 1 || playerStats.awake <= 0}
-              className="mt-0.5 h-5 text-[10px] px-1.5 py-0.5"
-              variant="default"
-              size="sm"
-            >
-              Train
-            </Button>
           </div>
         </div>
         

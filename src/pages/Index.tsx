@@ -29,7 +29,7 @@ const Index = () => {
       <PoliceEncounterModal />
 
       <Tabs defaultValue="market" className="w-full">
-        <TabsList className="grid grid-cols-4 mb-2">
+        <TabsList className="grid grid-cols-3 mb-2">
           <TabsTrigger value="market" className="flex items-center gap-1 text-xs py-1">
             <ShoppingBag className="w-3 h-3" />
             <span>Drug Market</span>
@@ -41,10 +41,6 @@ const Index = () => {
           <TabsTrigger value="store" className="flex items-center gap-1 text-xs py-1">
             <Store className="w-3 h-3" />
             <span>Vehicle Shop</span>
-          </TabsTrigger>
-          <TabsTrigger value="abilities" className="flex items-center gap-1 text-xs py-1">
-            <Sparkles className="w-3 h-3" />
-            <span>Abilities</span>
           </TabsTrigger>
         </TabsList>
         
@@ -77,10 +73,6 @@ const Index = () => {
                   <span>Full Shop</span>
                 </Link>
               </div>
-            </TabsContent>
-            
-            <TabsContent value="abilities" className="mt-0">
-              <AbilitiesPanel />
             </TabsContent>
           </div>
         </div>
