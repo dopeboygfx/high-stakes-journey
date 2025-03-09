@@ -1,18 +1,35 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGame } from '../context/GameContext';
-import { ArrowLeft, Dumbbell, Shield, Gauge } from 'lucide-react';
+import { ArrowLeft, Dumbbell, Shield, Gauge, Zap } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatMoney } from '../utils/gameUtils';
 import { AttributeCard } from '../components/game/gym/AttributeCard';
 import { PlayerLevelCard } from '../components/game/gym/PlayerLevelCard';
 import { TrainingEffectivenessInfo } from '../components/game/gym/TrainingEffectivenessInfo';
+import { Card } from '../components/ui/card';
 
 const Gym = () => {
   const navigate = useNavigate();
   const { state, dispatch } = useGame();
   const { playerStats } = state;
+  
+  // Track last training session results for visual feedback
+  const [lastTraining, setLastTraining] = useState<{
+    attribute: string;
+    amount: number;
+    timestamp: number;
+  } | null>(null);
+  
+  // Clear the last training after a delay (for animation)
+  useEffect(() => {
+    if (lastTraining) {
+      const timer = setTimeout(() => {
+        setLastTraining(null);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [lastTraining]);
   
   const calculateAttributeGain = (level: number, awake: number): number => {
     // Implement the formula based on awake value
@@ -47,6 +64,12 @@ const Gym = () => {
     return baseGain;
   };
   
+  const getTrainingEffectiveness = (gain: number): 'optimal' | 'good' | 'poor' => {
+    if (gain >= 3) return 'optimal';
+    if (gain >= 2) return 'good';
+    return 'poor';
+  };
+  
   const handleTrainAttribute = (attribute: "strength" | "defense" | "speed") => {
     if (playerStats.energy < 1) {
       toast.error("Not enough energy to train!");
@@ -59,6 +82,13 @@ const Gym = () => {
       type: "TRAIN_ATTRIBUTE", 
       attribute, 
       amount: gainAmount 
+    });
+    
+    // Track last training for animation
+    setLastTraining({
+      attribute,
+      amount: gainAmount,
+      timestamp: Date.now()
     });
     
     toast.success(`Trained ${attribute}! +${gainAmount} points`);
@@ -113,6 +143,16 @@ const Gym = () => {
   const optimalLevels = calculateOptimalLevels();
   const isAtOptimalLevel = optimalLevels.includes(playerStats.level);
   
+  // Pre-calculate gain amounts for each attribute
+  const strengthGain = calculateAttributeGain(playerStats.level, playerStats.awake);
+  const defenseGain = calculateAttributeGain(playerStats.level, playerStats.awake);
+  const speedGain = calculateAttributeGain(playerStats.level, playerStats.awake);
+  
+  // Get effectiveness categories based on gain amounts
+  const strengthEffectiveness = getTrainingEffectiveness(strengthGain);
+  const defenseEffectiveness = getTrainingEffectiveness(defenseGain);
+  const speedEffectiveness = getTrainingEffectiveness(speedGain);
+  
   return (
     <div className="container mx-auto p-4 space-y-6">
       <div className="flex items-center gap-4">
@@ -146,6 +186,8 @@ const Gym = () => {
           description="Increases your attack power and damage in combat"
           onTrain={() => handleTrainAttribute("strength")}
           disabled={playerStats.energy < 1}
+          effectiveness={strengthEffectiveness}
+          gainAmount={strengthGain}
         />
         
         <AttributeCard 
@@ -155,6 +197,8 @@ const Gym = () => {
           description="Reduces damage taken in combat and improves survivability"
           onTrain={() => handleTrainAttribute("defense")}
           disabled={playerStats.energy < 1}
+          effectiveness={defenseEffectiveness}
+          gainAmount={defenseGain}
         />
         
         <AttributeCard 
@@ -164,8 +208,24 @@ const Gym = () => {
           description="Improves attack and defense chances in combat"
           onTrain={() => handleTrainAttribute("speed")}
           disabled={playerStats.energy < 1}
+          effectiveness={speedEffectiveness}
+          gainAmount={speedGain}
         />
       </div>
+      
+      <Card className="p-4 mt-4">
+        <div className="flex items-center gap-2 mb-2">
+          <Zap className="h-5 w-5 text-yellow-500" />
+          <h3 className="font-semibold">Your Awake Level</h3>
+        </div>
+        <p className="text-sm text-muted-foreground mb-2">
+          Your current awake level: <span className="font-medium">{playerStats.awake}/10000</span>
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Training sessions decrease your awake level. When your awake level is low, your training effectiveness
+          will decrease. Use consumables from the shop to restore your awake level.
+        </p>
+      </Card>
     </div>
   );
 };
