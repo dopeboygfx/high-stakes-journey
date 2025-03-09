@@ -10,21 +10,30 @@ const calculateExpToNextLevel = (level: number): number => {
 
 // Helper function to handle leveling up
 const handleLevelUp = (stats: PlayerStats): PlayerStats => {
-  if (stats.exp >= stats.expToNextLevel) {
-    const newLevel = stats.level + 1;
-    const expRemaining = stats.exp - stats.expToNextLevel;
-    const newMaxEnergy = stats.maxEnergy + 2;
+  // Create a mutable copy of stats to work with
+  let updatedStats = { ...stats };
+  
+  // Check if player has enough exp to level up, and keep leveling up if they have enough exp
+  while (updatedStats.exp >= updatedStats.expToNextLevel) {
+    const newLevel = updatedStats.level + 1;
+    const expRemaining = updatedStats.exp - updatedStats.expToNextLevel;
+    const newMaxEnergy = updatedStats.maxEnergy + 2;
     
-    return {
-      ...stats,
+    // Update the stats
+    updatedStats = {
+      ...updatedStats,
       level: newLevel,
       exp: expRemaining,
       expToNextLevel: calculateExpToNextLevel(newLevel),
       maxEnergy: newMaxEnergy,
       energy: newMaxEnergy, // Restore energy on level up
     };
+    
+    // Show level up notification
+    toast.success(`Level up! You are now level ${newLevel}!`);
   }
-  return stats;
+  
+  return updatedStats;
 };
 
 // Calculate combat result between two players
@@ -354,15 +363,23 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
       
       const energyCost = 1;
       const awakeCost = calculateAwakeDepletion(action.attribute);
+      const gainExp = 10; // Base exp for training
+      
+      // Update player stats including exp gain
+      const updatedStats = {
+        ...state.playerStats,
+        [action.attribute]: state.playerStats[action.attribute] + action.amount,
+        energy: Math.max(0, state.playerStats.energy - energyCost),
+        awake: Math.max(0, state.playerStats.awake - awakeCost),
+        exp: state.playerStats.exp + gainExp
+      };
+      
+      // Check for level up with the updated exp
+      const finalStats = handleLevelUp(updatedStats);
       
       updatedState = {
         ...state,
-        playerStats: {
-          ...state.playerStats,
-          [action.attribute]: state.playerStats[action.attribute] + action.amount,
-          energy: Math.max(0, state.playerStats.energy - energyCost),
-          awake: Math.max(0, state.playerStats.awake - awakeCost)
-        },
+        playerStats: finalStats,
         stats: {
           ...state.stats,
           trainingSessionsCompleted: state.stats.trainingSessionsCompleted + 1
@@ -476,13 +493,19 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
       // Calculate combat result
       const combatResult = resolveCombat(state.playerStats, targetPlayer.stats);
       
+      // Update player stats with combat results, including exp
+      const updatedStats = {
+        ...state.playerStats,
+        exp: state.playerStats.exp + combatResult.expGained,
+        energy: state.playerStats.energy - 3 // Combat costs 3 energy
+      };
+      
+      // Handle level up if enough exp gained
+      const finalStats = handleLevelUp(updatedStats);
+      
       updatedState = {
         ...state,
-        playerStats: {
-          ...state.playerStats,
-          exp: state.playerStats.exp + combatResult.expGained,
-          energy: state.playerStats.energy - 3 // Combat costs 3 energy
-        },
+        playerStats: finalStats,
         money: combatResult.winner === "player" 
           ? state.money + combatResult.moneyGained 
           : state.money,
