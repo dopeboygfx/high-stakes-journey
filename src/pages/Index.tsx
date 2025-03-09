@@ -1,11 +1,10 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { ShoppingBag, Trophy, Map, Dumbbell, Shield, Store, Sparkles } from "lucide-react";
+import { ShoppingBag, Trophy, Map, Dumbbell, Store } from "lucide-react";
 import { MarketPlace } from "../components/game/MarketPlace";
 import { TravelOptions } from "../components/game/TravelOptions";
 import { PlayerStatsPanel } from "../components/game/PlayerStatsPanel";
-import { AbilitiesPanel } from "../components/game/AbilitiesPanel";
 import { useGame } from "../context/GameContext";
 import { GameOver } from "../components/game/GameOver";
 import { VehicleDisplay } from "../components/game/VehicleDisplay";
@@ -14,6 +13,7 @@ import { Inventory } from "../components/game/Inventory";
 import { ConsumablesInventory } from "../components/game/ConsumablesInventory";
 import { PoliceEncounterModal } from "../components/game/PoliceEncounterModal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import { Button } from "../components/ui/button";
 
 const Index = () => {
   const { state } = useGame();
@@ -65,13 +65,15 @@ const Index = () => {
             <TabsContent value="store" className="mt-0 space-y-3">
               <VehicleDisplay />
               <div className="pt-2">
-                <Link
-                  to="/shop"
-                  className="inline-flex items-center justify-center gap-1 p-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-xs"
+                <Button
+                  asChild
+                  className="inline-flex items-center justify-center gap-1 p-2 text-xs"
                 >
-                  <ShoppingBag className="w-3 h-3" />
-                  <span>Full Shop</span>
-                </Link>
+                  <Link to="/shop">
+                    <ShoppingBag className="w-3 h-3" />
+                    <span>Full Shop</span>
+                  </Link>
+                </Button>
               </div>
             </TabsContent>
           </div>
@@ -80,34 +82,46 @@ const Index = () => {
       
       {/* Quick links */}
       <div className="grid grid-cols-4 gap-2">
-        <Link
-          to="/shop"
-          className="flex items-center justify-center gap-1 p-1.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-xs"
+        <Button
+          asChild
+          variant="default"
+          className="flex items-center justify-center gap-1 p-1.5 text-xs"
         >
-          <ShoppingBag className="w-3 h-3" />
-          <span>Shop</span>
-        </Link>
-        <Link
-          to="/achievements"
-          className="flex items-center justify-center gap-1 p-1.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-xs"
+          <Link to="/shop">
+            <ShoppingBag className="w-3 h-3" />
+            <span>Shop</span>
+          </Link>
+        </Button>
+        <Button
+          asChild
+          variant="default"
+          className="flex items-center justify-center gap-1 p-1.5 text-xs"
         >
-          <Trophy className="w-3 h-3" />
-          <span>Achievements</span>
-        </Link>
-        <Link
-          to="/explore"
-          className="flex items-center justify-center gap-1 p-1.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-xs"
+          <Link to="/achievements">
+            <Trophy className="w-3 h-3" />
+            <span>Achievements</span>
+          </Link>
+        </Button>
+        <Button
+          asChild
+          variant="default"
+          className="flex items-center justify-center gap-1 p-1.5 text-xs"
         >
-          <Map className="w-3 h-3" />
-          <span>Explore</span>
-        </Link>
-        <Link
-          to="/gym"
-          className="flex items-center justify-center gap-1 p-1.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-xs"
+          <Link to="/explore">
+            <Map className="w-3 h-3" />
+            <span>Explore</span>
+          </Link>
+        </Button>
+        <Button
+          asChild
+          variant="default"
+          className="flex items-center justify-center gap-1 p-1.5 text-xs"
         >
-          <Dumbbell className="w-3 h-3" />
-          <span>Gym</span>
-        </Link>
+          <Link to="/gym">
+            <Dumbbell className="w-3 h-3" />
+            <span>Gym</span>
+          </Link>
+        </Button>
       </div>
     </div>
   );
