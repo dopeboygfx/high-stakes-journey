@@ -24,6 +24,7 @@ export type City = {
     x: number;
     y: number;
   };
+  levelRequirement?: number; // New field for level requirement
 };
 
 export type Vehicle = {

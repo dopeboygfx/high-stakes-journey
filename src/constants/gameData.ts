@@ -106,40 +106,45 @@ export const CITIES: City[] = [
     id: "miami",
     name: "Miami",
     description: "Sun-soaked beaches and neon nights",
-    availableDrugs: [DRUGS[0], DRUGS[1]], // Weed and Cocaine
+    availableDrugs: [DRUGS[0], DRUGS[3]], // Weed and Shrooms
     priceMultiplier: 1.4, // Better starter city multiplier
     coordinates: { x: 0, y: 0 },
+    levelRequirement: 1, // Starter city
   },
   {
     id: "ny",
     name: "New York",
     description: "The city that never sleeps",
-    availableDrugs: [DRUGS[2], DRUGS[4]], // LSD and Ecstasy
+    availableDrugs: [DRUGS[0], DRUGS[4]], // Weed and Ecstasy
     priceMultiplier: 1.8, // Premium market
     coordinates: { x: 150, y: 220 }, // Further distance
+    levelRequirement: 3, // Medium level requirement
   },
   {
     id: "la",
     name: "Los Angeles",
     description: "City of angels and dreams",
-    availableDrugs: [DRUGS[0], DRUGS[3]], // Weed and Shrooms
+    availableDrugs: [DRUGS[0], DRUGS[3], DRUGS[4]], // Weed, Shrooms, Ecstasy
     priceMultiplier: 1.5,
     coordinates: { x: -280, y: 80 }, // Increased distance for better route planning
+    levelRequirement: 5, // Higher level requirement
   },
   {
     id: "chicago",
     name: "Chicago",
     description: "The Windy City",
-    availableDrugs: [DRUGS[1], DRUGS[4]], // Cocaine and Ecstasy
+    availableDrugs: [DRUGS[1], DRUGS[2]], // Cocaine and LSD
     priceMultiplier: 1.6,
     coordinates: { x: 100, y: 180 },
+    levelRequirement: 7, // High level requirement
   },
   {
     id: "vegas",
     name: "Las Vegas",
     description: "Sin City",
-    availableDrugs: [DRUGS[2], DRUGS[3]], // LSD and Shrooms
+    availableDrugs: [DRUGS[1], DRUGS[2], DRUGS[3], DRUGS[4]], // All drugs except Weed
     priceMultiplier: 2.0, // Highest risk/reward
     coordinates: { x: -200, y: -100 }, // More isolated location
+    levelRequirement: 10, // Highest level requirement
   }
 ];

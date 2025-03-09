@@ -19,10 +19,15 @@ export const MarketPlace = () => {
   const { state } = useGame();
   const currentCity = CITIES.find((city) => city.id === state.currentCity)!;
   const { prices, isHighRisk, buyDrug, sellDrug } = useMarket(currentCity.id);
+  const playerLevel = state.playerStats.level;
 
   return (
     <div className="space-y-4">
-      <MarketHeader isHighRisk={isHighRisk} />
+      <MarketHeader 
+        isHighRisk={isHighRisk} 
+        cityLevel={currentCity.levelRequirement || 1}
+        playerLevel={playerLevel}
+      />
       <MarketEvents />
       <div className="grid gap-4">
         {currentCity.availableDrugs.map((drug) => {

@@ -1,10 +1,11 @@
 
-import { useState, useEffect, useCallback, ReactNode } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { TrendingDown, TrendingUp, AlertTriangle } from "lucide-react";
 import { useGame } from "../context/GameContext";
 import { MARKET_EVENTS } from "../components/game/market/marketEvents";
 import { calculateFinalPrice } from "../utils/marketUtils";
+import { CITIES } from "../constants/gameData";
 
 export const useMarket = (cityId: string) => {
   const { state, dispatch } = useGame();
@@ -12,6 +13,9 @@ export const useMarket = (cityId: string) => {
 
   const currentCity = state.currentCity === cityId;
   const cityData = state.cities.find(city => city.id === cityId)!;
+  const playerLevel = state.playerStats.level;
+  const cityLevelRequirement = cityData.levelRequirement || 1;
+  const canAccessCity = playerLevel >= cityLevelRequirement;
 
   // Handle market events
   useEffect(() => {
@@ -68,6 +72,11 @@ export const useMarket = (cityId: string) => {
   ]);
 
   const handleBuyDrug = useCallback((drugId: string, quantity: number = 1) => {
+    if (!canAccessCity) {
+      toast.error(`You need to be level ${cityLevelRequirement} to trade in ${cityData.name}`);
+      return;
+    }
+    
     const price = cityPrices[drugId];
     const maxAffordable = Math.floor(state.money / price);
     const actualQuantity = quantity === -1 ? maxAffordable : quantity;
@@ -99,9 +108,14 @@ export const useMarket = (cityId: string) => {
     if (actualQuantity > 10) {
       dispatch({ type: "INCREASE_HEAT" });
     }
-  }, [cityPrices, state.money, state.heat, dispatch]);
+  }, [cityPrices, state.money, state.heat, dispatch, canAccessCity, cityLevelRequirement, cityData.name]);
 
   const handleSellDrug = useCallback((drugId: string, quantity: number = 1) => {
+    if (!canAccessCity) {
+      toast.error(`You need to be level ${cityLevelRequirement} to trade in ${cityData.name}`);
+      return;
+    }
+    
     const inventory = state.inventory.find((item) => item.drugId === drugId);
     if (!inventory || inventory.quantity === 0) {
       toast.error("No inventory to sell!");
@@ -123,7 +137,7 @@ export const useMarket = (cityId: string) => {
     if (actualQuantity <= 5 && state.heat > 0) {
       dispatch({ type: "REDUCE_HEAT" });
     }
-  }, [cityPrices, state.inventory, state.heat, dispatch]);
+  }, [cityPrices, state.inventory, state.heat, dispatch, canAccessCity, cityLevelRequirement, cityData.name]);
 
   const cityPolice = state.policeActivity.find(p => p.cityId === cityId);
   const isHighRisk = cityPolice?.isInvestigating || state.heat > 75;
