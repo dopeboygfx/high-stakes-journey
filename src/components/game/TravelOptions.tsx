@@ -1,5 +1,5 @@
 
-import { Truck, Pill, Cannabis, Beaker, Wine, Candy, Shield, AlertTriangle, Sparkles } from "lucide-react";
+import { Truck, Pill, Cannabis, Beaker, Wine, Candy, Shield, AlertTriangle, Sparkles, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { useGame } from "../../context/GameContext";
 import { CITIES, VEHICLES, BASE_TRAVEL_SPEED } from "../../constants/gameData";
@@ -69,6 +69,12 @@ export const TravelOptions = () => {
       return;
     }
 
+    const city = CITIES.find(c => c.id === cityId);
+    if (city?.levelRequirement && state.playerStats.level < city.levelRequirement) {
+      toast.error(`You need to be level ${city.levelRequirement} to travel to ${city.name}!`);
+      return;
+    }
+
     const event = generateRandomEvent(state.heat);
     const distance = calculateDistance(state.currentCity, cityId);
     const travelTime = calculateTravelTime(distance, event);
@@ -119,15 +125,18 @@ export const TravelOptions = () => {
         {CITIES.map((city) => {
           const distance = calculateDistance(state.currentCity, city.id);
           const travelTime = calculateTravelTime(distance);
+          const isLevelLocked = city.levelRequirement && state.playerStats.level < city.levelRequirement;
           
           return (
             <button
               key={city.id}
               onClick={() => handleTravel(city.id)}
-              disabled={city.id === state.currentCity || state.isTraveling}
+              disabled={city.id === state.currentCity || state.isTraveling || isLevelLocked}
               className={`p-4 rounded-lg border text-left transition-all ${
                 city.id === state.currentCity
                   ? "bg-card/50 border-border/50 cursor-default"
+                  : isLevelLocked
+                  ? "bg-card/50 border-border/50 cursor-not-allowed opacity-70"
                   : state.isTraveling
                   ? "bg-card/50 border-border/50 cursor-not-allowed opacity-50"
                   : "bg-card hover:border-border/80 hover:translate-y-[-2px]"
@@ -135,13 +144,26 @@ export const TravelOptions = () => {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-medium">{city.name}</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-medium">{city.name}</h3>
+                    {isLevelLocked && (
+                      <div className="flex items-center text-amber-500 text-sm gap-1">
+                        <Lock className="w-3 h-3" />
+                        <span>Level {city.levelRequirement}</span>
+                      </div>
+                    )}
+                  </div>
                   <p className="text-sm text-muted-foreground">
                     {city.description}
                   </p>
-                  {city.id !== state.currentCity && (
+                  {city.id !== state.currentCity && !isLevelLocked && (
                     <p className="text-sm text-muted-foreground">
                       Travel time: {Math.round(travelTime / 1000)}s
+                    </p>
+                  )}
+                  {isLevelLocked && (
+                    <p className="text-sm text-amber-500/80">
+                      Requires level {city.levelRequirement}
                     </p>
                   )}
                   <div className="flex gap-2 mt-2">
@@ -158,7 +180,14 @@ export const TravelOptions = () => {
                   </div>
                 </div>
                 {city.id !== state.currentCity && (
-                  <Truck className="w-5 h-5 text-muted-foreground" />
+                  <div className="flex flex-col items-end">
+                    <Truck className="w-5 h-5 text-muted-foreground" />
+                    {city.levelRequirement && (
+                      <span className={`text-xs mt-1 ${isLevelLocked ? 'text-amber-500' : 'text-green-500'}`}>
+                        Lvl {city.levelRequirement}
+                      </span>
+                    )}
+                  </div>
                 )}
               </div>
             </button>
