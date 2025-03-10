@@ -5,9 +5,13 @@ import { useGame } from "../../context/GameContext";
 import { VEHICLES } from "../../constants/gameData";
 import { formatMoney } from "../../utils/gameUtils";
 import { Button } from "../ui/button";
+import { getCityVehicles } from "../../utils/shopUtils";
 
 export const VehicleShop = () => {
   const { state, dispatch } = useGame();
+  
+  // Get vehicles available in this city
+  const availableVehicles = getCityVehicles(state.currentCity);
 
   const handleBuyVehicle = (vehicleId: string) => {
     const vehicle = VEHICLES.find(v => v.id === vehicleId)!;
@@ -32,7 +36,7 @@ export const VehicleShop = () => {
     <div className="p-2 rounded-lg border bg-card text-sm">
       <h2 className="text-base font-bold mb-2">Vehicle Shop</h2>
       <div className="grid gap-2">
-        {VEHICLES.map((vehicle) => (
+        {availableVehicles.map((vehicle) => (
           <div
             key={vehicle.id}
             className={`p-3 rounded-lg border flex justify-between items-center ${
@@ -66,6 +70,13 @@ export const VehicleShop = () => {
           </div>
         ))}
       </div>
+      
+      {availableVehicles.length === 0 && (
+        <div className="p-3 text-center text-muted-foreground text-sm">
+          No vehicles available in this city.
+          <p className="text-xs">Travel to other cities to find different vehicles.</p>
+        </div>
+      )}
     </div>
   );
 };

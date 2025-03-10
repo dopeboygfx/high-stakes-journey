@@ -6,6 +6,7 @@ import { PillBottle, Beaker, Dumbbell, Shield, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatMoney } from '../../utils/gameUtils';
 import { Button } from '../ui/button';
+import { getCityConsumables } from '../../utils/shopUtils';
 
 const consumableIcons: Record<string, any> = {
   awake_pill: PillBottle,
@@ -17,6 +18,9 @@ const consumableIcons: Record<string, any> = {
 
 export const ConsumablesShop = () => {
   const { state, dispatch } = useGame();
+  
+  // Get available consumables for the current city
+  const availableConsumables = getCityConsumables(state.currentCity);
   
   const handleBuyConsumable = (consumableId: string, quantity: number = 1) => {
     const consumable = CONSUMABLES.find(c => c.id === consumableId);
@@ -46,7 +50,7 @@ export const ConsumablesShop = () => {
       <h2 className="text-base font-bold mb-2">Premium Supplies</h2>
       
       <div className="grid gap-2">
-        {CONSUMABLES.map((consumable) => {
+        {availableConsumables.map((consumable) => {
           const Icon = consumableIcons[consumable.id] || Beaker;
           const count = getConsumableCount(consumable.id);
           
@@ -82,6 +86,13 @@ export const ConsumablesShop = () => {
           );
         })}
       </div>
+      
+      {availableConsumables.length === 0 && (
+        <div className="p-3 text-center text-muted-foreground text-sm">
+          No supplies available in this city.
+          <p className="text-xs">Travel to other cities to find different items.</p>
+        </div>
+      )}
     </div>
   );
 };
