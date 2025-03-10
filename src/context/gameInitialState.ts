@@ -2,6 +2,7 @@
 import { GameState, Ability, PlayerStats, Achievement } from "../types/game";
 import { INITIAL_MONEY, CITIES } from "../constants/gameData";
 import { ACHIEVEMENTS } from "../constants/achievementData";
+import { getAvailableCrimes } from "../constants/crimeData";
 
 export const INITIAL_ABILITIES: Ability[] = [
   {
@@ -52,6 +53,9 @@ export const INITIAL_PLAYER_STATS: PlayerStats = {
   energy: 10,
   maxEnergy: 10,
   awake: 10000, // Initial awake value
+  nerve: 10, // Initial nerve value
+  maxNerve: 10, // Initial max nerve
+  lastNerveRegen: Date.now() // Initialize nerve regen timestamp
 };
 
 export const initialState: GameState = {
@@ -77,11 +81,14 @@ export const initialState: GameState = {
   playerStats: INITIAL_PLAYER_STATS,
   onlinePlayers: [],
   achievements: ACHIEVEMENTS,
+  availableCrimes: getAvailableCrimes(INITIAL_PLAYER_STATS.level, CITIES[0].id),
   stats: {
     dealsCompleted: 0,
     citiesVisited: [CITIES[0].id],
     fightswon: 0,
     totalMoneyEarned: 0,
-    trainingSessionsCompleted: 0
+    trainingSessionsCompleted: 0,
+    crimesCompleted: 0,
+    successfulCrimes: 0
   }
 };

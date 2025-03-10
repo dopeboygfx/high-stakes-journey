@@ -14,6 +14,21 @@ export type Consumable = {
   magnitude: number; // For awake/energy: percentage to restore. For boosts: flat amount to add
 };
 
+export type Crime = {
+  id: string;
+  name: string;
+  description: string;
+  nerveRequired: number;
+  moneyGain: number;
+  expGain: number;
+  requiredLevel?: number;
+  requiresMastery?: boolean;
+  cityRestriction?: string;
+  successRate: number;
+  cooldown: number; // in milliseconds
+  lastAttempted?: number;
+};
+
 export type City = {
   id: string;
   name: string;
@@ -92,6 +107,9 @@ export type PlayerStats = {
   energy: number;
   maxEnergy: number;
   awake: number; // New attribute for determining optimal training levels
+  nerve: number; // New stat for crimes
+  maxNerve: number; // Maximum nerve capacity
+  lastNerveRegen: number; // Timestamp for last nerve regeneration
 };
 
 export type OnlinePlayer = {
@@ -143,6 +161,14 @@ export type Achievement = {
   };
 };
 
+export type CrimeResult = {
+  success: boolean;
+  message: string;
+  moneyGained: number;
+  expGained: number;
+  nerveUsed: number;
+};
+
 export type GameState = {
   money: number;
   currentCity: string;
@@ -165,12 +191,16 @@ export type GameState = {
   lastCombat?: CombatResult;
   achievements: Achievement[];
   activePoliceEncounter?: PoliceEncounter;
+  availableCrimes: Crime[];
+  lastCrimeResult?: CrimeResult;
   stats: {
     dealsCompleted: number;
     citiesVisited: string[];
     fightswon: number;
     totalMoneyEarned: number;
     trainingSessionsCompleted: number;
+    crimesCompleted: number;
+    successfulCrimes: number;
   };
 };
 
@@ -205,4 +235,6 @@ export type GameAction =
   | { type: "RESOLVE_POLICE_ENCOUNTER"; outcomeIndex: number }
   | { type: "INCREASE_MAX_ENERGY"; amount: number }
   | { type: "BOOST_ATTRIBUTE"; attribute: "strength" | "defense" | "speed"; amount: number }
-  | { type: "RECORD_STAT"; statType: "dealsCompleted" | "fightswon" | "trainingSessionsCompleted" | "totalMoneyEarned"; value: number };
+  | { type: "RECORD_STAT"; statType: "dealsCompleted" | "fightswon" | "trainingSessionsCompleted" | "totalMoneyEarned"; value: number }
+  | { type: "COMMIT_CRIME"; crimeId: string }
+  | { type: "REGENERATE_NERVE" };

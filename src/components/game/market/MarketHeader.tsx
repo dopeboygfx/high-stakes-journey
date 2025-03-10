@@ -6,9 +6,17 @@ type MarketHeaderProps = {
   isHighRisk: boolean;
   cityLevel?: number;
   playerLevel: number;
+  isHighNerve?: boolean;
+  nerveRequired?: number;
 };
 
-export const MarketHeader = ({ isHighRisk, cityLevel = 1, playerLevel }: MarketHeaderProps) => {
+export const MarketHeader = ({ 
+  isHighRisk, 
+  cityLevel = 1, 
+  playerLevel,
+  isHighNerve = false,
+  nerveRequired
+}: MarketHeaderProps) => {
   return (
     <div className="p-3 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50">
       <div className="flex justify-between items-center">
@@ -18,6 +26,13 @@ export const MarketHeader = ({ isHighRisk, cityLevel = 1, playerLevel }: MarketH
             <div className="flex items-center">
               <AlertTriangle className="w-4 h-4 text-destructive mr-1" />
               <span className="text-xs text-destructive font-medium">High Risk</span>
+            </div>
+          )}
+          
+          {isHighNerve && nerveRequired && (
+            <div className="flex items-center">
+              <AlertTriangle className="w-4 h-4 text-yellow-500 mr-1" />
+              <span className="text-xs text-yellow-500 font-medium">Nerve {nerveRequired}+</span>
             </div>
           )}
           

@@ -1,7 +1,8 @@
-import { GameState, GameAction, PlayerStats, Consumable, Achievement } from "../types/game";
+import { GameState, GameAction, PlayerStats, Crime, CrimeResult } from "../types/game";
 import { CITIES, VEHICLES, CONSUMABLES } from "../constants/gameData";
 import { POLICE_ENCOUNTERS } from "../constants/policeEncounterData";
 import { toast } from "sonner";
+import { getAvailableCrimes } from "../constants/crimeData";
 
 // Calculate exp needed for next level using a simple formula
 const calculateExpToNextLevel = (level: number): number => {
@@ -138,6 +139,39 @@ const generatePoliceEncounter = (heat: number, wantedLevel: number) => {
   return null;
 };
 
+// Calculate crime success and results
+const resolveCrime = (crime: Crime, playerLevel: number): CrimeResult => {
+  // Base success rate from the crime definition
+  let successRate = crime.successRate;
+  
+  // Slight bonus for higher level players (1% per level above crime's nerve requirement)
+  const levelBonus = Math.min(0.25, (playerLevel - crime.nerveRequired) * 0.01);
+  successRate += levelBonus;
+  
+  // Random factor for success
+  const success = Math.random() < successRate;
+  
+  // Calculate rewards (reduced for failure)
+  const moneyGained = success ? crime.moneyGain : 0;
+  const expGained = success ? crime.expGain : Math.floor(crime.expGain * 0.2); // 20% exp for failed attempts
+  
+  // Generate appropriate message
+  let message;
+  if (success) {
+    message = `Success! You completed the ${crime.name} and earned $${moneyGain}.`;
+  } else {
+    message = `Failed! You couldn't successfully complete the ${crime.name}.`;
+  }
+  
+  return {
+    success,
+    message,
+    moneyGained,
+    expGained,
+    nerveUsed: crime.nerveRequired
+  };
+};
+
 export const gameReducer = (state: GameState, action: GameAction): GameState => {
   let updatedState = { ...state };
   
@@ -207,6 +241,12 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
           citiesVisited: updatedVisitedCities
         }
       };
+      
+      // Update available crimes for the new city
+      updatedState.availableCrimes = getAvailableCrimes(
+        updatedState.playerStats.level,
+        action.cityId
+      );
       
       // Check for police encounter
       const policeEncounter = generatePoliceEncounter(updatedState.heat, updatedState.wantedLevel);
@@ -517,6 +557,292 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
             : state.stats.fightswon
         }
       };
+      break;
+    }
+    
+    case "UPDATE_ONLINE_PLAYERS": {
+      updatedState = {
+        ...state,
+        onlinePlayers: action.players
+      };
+      break;
+    }
+    
+    case "GAME_OVER":
+      updatedState = {
+        ...state,
+        gameOver: true,
+      };
+      break;
+      
+    case "UPDATE_ACHIEVEMENT_PROGRESS": {
+      updatedState = {
+        ...state,
+        achievements: state.achievements.map(achievement => 
+          achievement.id === action.achievementId
+            ? { 
+                ...achievement, 
+                progress: action.progress,
+                completed: action.progress >= achievement.requirement 
+              }
+            : achievement
+        )
+      };
+      break;
+    }
+    
+    case "CLAIM_ACHIEVEMENT": {
+      updatedState = {
+        ...state,
+        achievements: state.achievements.map(achievement => 
+          achievement.id === action.achievementId && achievement.completed
+            ? { ...achievement, claimed: true }
+            : achievement
+        )
+      };
+      break;
+    }
+    
+    case "START_POLICE_ENCOUNTER": {
+      updatedState = {
+        ...state,
+        activePoliceEncounter: action.encounter
+      };
+      break;
+    }
+    
+    case "RESOLVE_POLICE_ENCOUNTER": {
+      if (!state.activePoliceEncounter) return state;
+      
+      const option = state.activePoliceEncounter.options[action.outcomeIndex];
+      const success = Math.random() < option.successChance;
+      
+      // Apply outcome effects
+      let heatChange = option.heatChange;
+      let moneyChange = option.moneyChange;
+      
+      if (!success) {
+        // Failed attempt has worse outcomes
+        heatChange = option.outcome === 'surrender' ? 15 : 30; // Always increase heat on failure
+        moneyChange = option.outcome === 'bribe' ? option.moneyChange : -500; // Lose money on failed non-bribe
+      }
+      
+      updatedState = {
+        ...state,
+        activePoliceEncounter: undefined,
+        heat: Math.max(0, Math.min(100, state.heat + heatChange)),
+        money: Math.max(0, state.money + moneyChange),
+        playerStats: {
+          ...state.playerStats,
+          energy: Math.max(0, state.playerStats.energy - option.energyCost)
+        },
+        wantedLevel: success && heatChange < 0 
+          ? Math.max(0, state.wantedLevel - 1) // Reduce wanted level on successful de-escalation
+          : !success && option.outcome !== 'surrender'
+            ? Math.min(5, state.wantedLevel + 1) // Increase wanted level on failed aggressive action
+            : state.wantedLevel
+      };
+      
+      // Show outcome message
+      if (success) {
+        switch(option.outcome) {
+          case 'bribe':
+            toast.success("The officer accepted your bribe and let you go!");
+            break;
+          case 'flee':
+            toast.success("You managed to escape!");
+            break;
+          case 'fight':
+            toast.success("You overpowered the officers and escaped!");
+            break;
+          case 'surrender':
+            toast.success("The officers believed your story and let you go with a warning.");
+            break;
+        }
+      } else {
+        switch(option.outcome) {
+          case 'bribe':
+            toast.error("The officer rejected your bribe and increased your wanted level!");
+            break;
+          case 'flee':
+            toast.error("Your escape attempt failed! Your heat has increased.");
+            break;
+          case 'fight':
+            toast.error("You couldn't overpower the officers. Your wanted level increased!");
+            break;
+          case 'surrender':
+            toast.error("The officers didn't believe your story but let you go with a fine.");
+            break;
+        }
+      }
+      
+      break;
+    }
+    
+    case "INCREASE_MAX_ENERGY": {
+      updatedState = {
+        ...state,
+        playerStats: {
+          ...state.playerStats,
+          maxEnergy: state.playerStats.maxEnergy + action.amount,
+          energy: state.playerStats.energy + action.amount // Also increase current energy
+        }
+      };
+      break;
+    }
+    
+    case "BOOST_ATTRIBUTE": {
+      if (!action.attribute) return state;
+      
+      updatedState = {
+        ...state,
+        playerStats: {
+          ...state.playerStats,
+          [action.attribute]: state.playerStats[action.attribute] + action.amount
+        }
+      };
+      break;
+    }
+    
+    case "RECORD_STAT": {
+      updatedState = {
+        ...state,
+        stats: {
+          ...state.stats,
+          [action.statType]: action.statType === 'totalMoneyEarned' 
+            ? state.stats[action.statType] + action.value 
+            : state.stats[action.statType] + 1
+        }
+      };
+      break;
+    }
+    
+    case "COMMIT_CRIME": {
+      // Find the crime
+      const crime = state.availableCrimes.find(c => c.id === action.crimeId);
+      if (!crime) return state;
+      
+      // Check if player has enough nerve
+      if (state.playerStats.nerve < crime.nerveRequired) {
+        toast.error(`Not enough nerve to commit this crime! Required: ${crime.nerveRequired}`);
+        return state;
+      }
+      
+      // Check if crime is on cooldown
+      const now = Date.now();
+      if (crime.lastAttempted && now - crime.lastAttempted < crime.cooldown) {
+        const timeLeft = Math.ceil((crime.lastAttempted + crime.cooldown - now) / 1000 / 60);
+        toast.error(`This crime is on cooldown. Try again in ${timeLeft} minutes.`);
+        return state;
+      }
+      
+      // Resolve the crime
+      const crimeResult = resolveCrime(crime, state.playerStats.level);
+      
+      // Update available crimes with cooldowns
+      const updatedCrimes = state.availableCrimes.map(c => 
+        c.id === crime.id ? { ...c, lastAttempted: now } : c
+      );
+      
+      // Update player stats
+      const updatedStats = {
+        ...state.playerStats,
+        nerve: Math.max(0, state.playerStats.nerve - crimeResult.nerveUsed),
+        exp: state.playerStats.exp + crimeResult.expGained
+      };
+      
+      // Check for level up with the updated exp
+      const finalStats = handleLevelUp(updatedStats);
+      
+      // Show result message
+      if (crimeResult.success) {
+        toast.success(crimeResult.message);
+      } else {
+        toast.error(crimeResult.message);
+      }
+      
+      // Check for heat increase on failure (50% chance)
+      const heatIncrease = !crimeResult.success && Math.random() < 0.5 ? 5 : 0;
+      
+      updatedState = {
+        ...state,
+        money: state.money + crimeResult.moneyGained,
+        playerStats: finalStats,
+        availableCrimes: updatedCrimes,
+        lastCrimeResult: crimeResult,
+        heat: Math.min(100, state.heat + heatIncrease),
+        stats: {
+          ...state.stats,
+          crimesCompleted: state.stats.crimesCompleted + 1,
+          successfulCrimes: crimeResult.success 
+            ? state.stats.successfulCrimes + 1 
+            : state.stats.successfulCrimes,
+          totalMoneyEarned: state.stats.totalMoneyEarned + crimeResult.moneyGained
+        }
+      };
+      
+      // Trigger police encounter based on crime (5% chance or 15% for failed crime)
+      const encounterChance = crimeResult.success ? 0.05 : 0.15;
+      if (Math.random() < encounterChance) {
+        const policeEncounter = generatePoliceEncounter(updatedState.heat, updatedState.wantedLevel);
+        if (policeEncounter) {
+          updatedState.activePoliceEncounter = policeEncounter;
+        }
+      }
+      
+      break;
+    }
+    
+    case "REGENERATE_NERVE": {
+      const now = Date.now();
+      const lastRegen = state.playerStats.lastNerveRegen;
+      const timeSinceRegen = now - lastRegen;
+      
+      // Regenerate 1 nerve every 5 minutes (300000 ms)
+      const regenRate = 300000;
+      const nervesToRegen = Math.floor(timeSinceRegen / regenRate);
+      
+      if (nervesToRegen > 0) {
+        const newNerve = Math.min(
+          state.playerStats.maxNerve, 
+          state.playerStats.nerve + nervesToRegen
+        );
+        
+        updatedState = {
+          ...state,
+          playerStats: {
+            ...state.playerStats,
+            nerve: newNerve,
+            lastNerveRegen: lastRegen + (nervesToRegen * regenRate)
+          }
+        };
+      }
+      
+      break;
+    }
+    
+    case "GAIN_EXP": {
+      const updatedStats = {
+        ...state.playerStats,
+        exp: state.playerStats.exp + action.amount
+      };
+      
+      // Check for level up
+      const finalStats = handleLevelUp(updatedStats);
+      
+      updatedState = {
+        ...state,
+        playerStats: finalStats
+      };
+      
+      // Update available crimes when level changes
+      if (updatedState.playerStats.level > state.playerStats.level) {
+        updatedState.availableCrimes = getAvailableCrimes(
+          updatedState.playerStats.level,
+          updatedState.currentCity
+        );
+      }
+      
       break;
     }
     
