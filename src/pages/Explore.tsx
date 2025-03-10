@@ -33,7 +33,10 @@ const Explore = () => {
             speed: baseAttribute + Math.floor(Math.random() * 5) - 2,
             energy: 10,
             maxEnergy: 10,
-            awake: 10000
+            awake: 10000,
+            nerve: 10, // Adding missing property
+            maxNerve: 10, // Adding missing property
+            lastNerveRegen: Date.now() // Adding missing property
           },
           lastActive: Date.now()
         };

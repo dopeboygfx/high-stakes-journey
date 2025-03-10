@@ -1,94 +1,67 @@
 
-import React, { useEffect } from "react";
-import { useGame } from "../context/GameContext";
-import { CITIES } from "../constants/gameData";
-import { CrimesList } from "../components/game/crimes/CrimesList";
-import { NerveStatus } from "../components/game/crimes/NerveStatus";
-import { Badge } from "../components/ui/badge";
-import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
-import { AlertTriangle, Skull } from "lucide-react";
-import { GameHeader } from "../components/game/GameHeader";
-import { FloatingStatusBar } from "../components/game/FloatingStatusBar";
-import { MarketHeader } from "../components/game/market/MarketHeader";
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowLeft, AlertTriangle } from 'lucide-react';
+import { useGame } from '../context/GameContext';
+import { NerveStatus } from '../components/game/crimes/NerveStatus';
+import { CrimesList } from '../components/game/crimes/CrimesList';
+import { MarketHeader } from '../components/game/market/MarketHeader';
+import { PlayerStatsPanel } from '../components/game/PlayerStatsPanel';
 
-export const Crimes = () => {
+const Crimes = () => {
   const { state, dispatch } = useGame();
-  const currentCity = CITIES.find((city) => city.id === state.currentCity)!;
+  const { currentCity, playerStats, availableCrimes } = state;
   
-  // Check for nerve regeneration on component mount and when playerStats changes
+  // Find current city
+  const city = state.cities.find(c => c.id === currentCity)!;
+  
+  // Regenerate nerve when visiting the page
   useEffect(() => {
     dispatch({ type: "REGENERATE_NERVE" });
-    
-    // Set up an interval to check for nerve regeneration every minute
-    const interval = setInterval(() => {
-      dispatch({ type: "REGENERATE_NERVE" });
-    }, 60000);
-    
-    return () => clearInterval(interval);
-  }, [dispatch]);
+  }, []);
   
-  const handleCommitCrime = (crimeId: string) => {
-    dispatch({ type: "COMMIT_CRIME", crimeId });
-  };
+  // Check if any crimes require high nerve
+  const hasHighNerveCrimes = availableCrimes.some(crime => crime.nerveRequired >= 5);
   
-  const handleRegenerateNerve = () => {
-    dispatch({ type: "REGENERATE_NERVE" });
-  };
-  
-  // Check if any crime results happened
-  const lastCrime = state.lastCrimeResult;
+  // Get highest nerve requirement
+  const highestNerveRequired = Math.max(...availableCrimes.map(crime => crime.nerveRequired));
   
   return (
-    <div className="container mx-auto p-4 pb-24">
-      <GameHeader 
-        title="Criminal Network"
-        subtitle="Commit crimes to earn money and experience"
-      />
-      
-      <div className="space-y-4 mt-4">
-        <MarketHeader 
-          isHighRisk={state.heat > 70} 
-          cityLevel={currentCity.levelRequirement || 1}
-          playerLevel={state.playerStats.level}
-          isHighNerve={true}
-          nerveRequired={1}
-        />
-        
-        {state.heat > 70 && (
-          <Alert variant="destructive">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>High Risk Alert!</AlertTitle>
-            <AlertDescription>
-              Your heat level is dangerously high ({state.heat}%). Committing crimes now has a higher chance of police encounters.
-            </AlertDescription>
-          </Alert>
-        )}
-        
-        <NerveStatus 
-          nerve={state.playerStats.nerve}
-          maxNerve={state.playerStats.maxNerve}
-          lastRegen={state.playerStats.lastNerveRegen}
-          onRegenerate={handleRegenerateNerve}
-        />
-        
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold">Available Crimes</h3>
-          <Badge variant="outline" className="flex items-center">
-            <Skull className="w-3 h-3 mr-1 text-destructive" />
-            <span>Wanted Level: {state.wantedLevel}/5</span>
-          </Badge>
-        </div>
-        
-        <CrimesList 
-          crimes={state.availableCrimes || []}
-          playerNerve={state.playerStats.nerve}
-          playerLevel={state.playerStats.level}
-          currentCity={state.currentCity}
-          onCommitCrime={handleCommitCrime}
-        />
+    <div className="container mx-auto p-3 space-y-4">
+      <div className="flex items-center gap-3">
+        <Link
+          to="/"
+          className="p-1.5 hover:bg-accent rounded-full transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </Link>
+        <h1 className="text-xl font-bold">Criminal Activities</h1>
       </div>
       
-      <FloatingStatusBar />
+      <MarketHeader 
+        isHighRisk={false} 
+        cityLevel={city.levelRequirement || 1}
+        playerLevel={playerStats.level}
+        isHighNerve={hasHighNerveCrimes}
+        nerveRequired={highestNerveRequired}
+      />
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="space-y-4 md:col-span-2">
+          <NerveStatus 
+            nerve={playerStats.nerve} 
+            maxNerve={playerStats.maxNerve} 
+          />
+          
+          <CrimesList />
+        </div>
+        
+        <div className="space-y-4">
+          <PlayerStatsPanel />
+        </div>
+      </div>
     </div>
   );
 };
+
+export default Crimes;
