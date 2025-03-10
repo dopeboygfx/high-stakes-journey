@@ -18,7 +18,17 @@ const Crimes = () => {
   // Regenerate nerve when visiting the page
   useEffect(() => {
     dispatch({ type: "REGENERATE_NERVE" });
-  }, []);
+  }, [dispatch]);
+  
+  // Function to handle nerve regeneration
+  const handleRegenerateNerve = () => {
+    dispatch({ type: "REGENERATE_NERVE" });
+  };
+  
+  // Function to commit a crime
+  const handleCommitCrime = (crimeId: string) => {
+    dispatch({ type: "COMMIT_CRIME", crimeId });
+  };
   
   // Check if any crimes require high nerve
   const hasHighNerveCrimes = availableCrimes.some(crime => crime.nerveRequired >= 5);
@@ -50,10 +60,18 @@ const Crimes = () => {
         <div className="space-y-4 md:col-span-2">
           <NerveStatus 
             nerve={playerStats.nerve} 
-            maxNerve={playerStats.maxNerve} 
+            maxNerve={playerStats.maxNerve}
+            lastRegen={playerStats.lastNerveRegen}
+            onRegenerate={handleRegenerateNerve}
           />
           
-          <CrimesList />
+          <CrimesList 
+            crimes={availableCrimes}
+            playerNerve={playerStats.nerve}
+            playerLevel={playerStats.level}
+            currentCity={currentCity}
+            onCommitCrime={handleCommitCrime}
+          />
         </div>
         
         <div className="space-y-4">
