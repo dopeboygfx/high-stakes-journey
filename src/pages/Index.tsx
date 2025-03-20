@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { ShoppingBag, Trophy, Map, Dumbbell, Store } from "lucide-react";
+import { ShoppingBag, Trophy, Map, Dumbbell, Store, Shield } from "lucide-react";
 import { MarketPlace } from "../components/game/MarketPlace";
 import { TravelOptions } from "../components/game/TravelOptions";
 import { PlayerStatsPanel } from "../components/game/PlayerStatsPanel";
@@ -14,14 +14,20 @@ import { ConsumablesInventory } from "../components/game/ConsumablesInventory";
 import { PoliceEncounterModal } from "../components/game/PoliceEncounterModal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Button } from "../components/ui/button";
+import { CrimesList } from "../components/game/crimes/CrimesList";
 
 const Index = () => {
-  const { state } = useGame();
+  const { state, dispatch } = useGame();
 
   // Game over state
   if (state.gameOver) {
     return <GameOver finalScore={state.money} />;
   }
+  
+  // Regenerate nerve when visiting crimes tab
+  const handleCrimesTabSelect = () => {
+    dispatch({ type: "REGENERATE_NERVE" });
+  };
 
   return (
     <div className="container mx-auto p-2 space-y-3">
@@ -29,7 +35,7 @@ const Index = () => {
       <PoliceEncounterModal />
 
       <Tabs defaultValue="market" className="w-full">
-        <TabsList className="grid grid-cols-3 mb-2">
+        <TabsList className="grid grid-cols-4 mb-2">
           <TabsTrigger value="market" className="flex items-center gap-1 text-xs py-1">
             <ShoppingBag className="w-3 h-3" />
             <span>Drug Market</span>
@@ -37,6 +43,10 @@ const Index = () => {
           <TabsTrigger value="travel" className="flex items-center gap-1 text-xs py-1">
             <Map className="w-3 h-3" />
             <span>Travel</span>
+          </TabsTrigger>
+          <TabsTrigger value="crimes" className="flex items-center gap-1 text-xs py-1" onClick={handleCrimesTabSelect}>
+            <Shield className="w-3 h-3" />
+            <span>Crimes</span>
           </TabsTrigger>
           <TabsTrigger value="store" className="flex items-center gap-1 text-xs py-1">
             <Store className="w-3 h-3" />
@@ -60,6 +70,16 @@ const Index = () => {
             
             <TabsContent value="travel" className="mt-0">
               <TravelOptions />
+            </TabsContent>
+            
+            <TabsContent value="crimes" className="mt-0">
+              <CrimesList 
+                crimes={state.availableCrimes}
+                playerNerve={state.playerStats.nerve}
+                playerLevel={state.playerStats.level}
+                currentCity={state.currentCity}
+                onCommitCrime={(crimeId) => dispatch({ type: "COMMIT_CRIME", crimeId })}
+              />
             </TabsContent>
             
             <TabsContent value="store" className="mt-0 space-y-3">

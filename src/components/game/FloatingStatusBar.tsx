@@ -13,7 +13,8 @@ import {
   Gauge,
   MapPin,
   DollarSign,
-  AlertCircle
+  AlertCircle,
+  Shield
 } from "lucide-react";
 import { Progress } from "../ui/progress";
 
@@ -29,8 +30,8 @@ export const FloatingStatusBar = () => {
     { path: "/", icon: <Home className="w-4 h-4" />, label: "Home" },
     { path: "/shop", icon: <ShoppingBag className="w-4 h-4" />, label: "Shop" },
     { path: "/explore", icon: <Map className="w-4 h-4" />, label: "Explore" },
+    { path: "/crimes", icon: <Shield className="w-4 h-4" />, label: "Crimes" },
     { path: "/gym", icon: <Dumbbell className="w-4 h-4" />, label: "Gym" },
-    { path: "/achievements", icon: <Trophy className="w-4 h-4" />, label: "Achievements" },
   ];
 
   return (
