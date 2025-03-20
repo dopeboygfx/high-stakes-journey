@@ -81,7 +81,7 @@ export const CrimesList = ({
               key={crime.id}
               crime={crime}
               playerNerve={playerNerve}
-              playerLevel={playerStats.level}
+              playerLevel={playerLevel} /* Fixed: using playerLevel prop directly instead of playerStats.level */
               onCommit={onCommitCrime}
               isCityRestricted={!!crime.cityRestriction && crime.cityRestriction !== currentCity}
             />
