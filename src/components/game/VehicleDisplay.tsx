@@ -11,17 +11,17 @@ export const VehicleDisplay = () => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">Your Vehicle</h2>
+        <h2 className="text-xl font-semibold">Your Vehicle</h2>
         <Link
           to="/shop"
-          className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+          className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm"
         >
           Visit Shop
         </Link>
       </div>
       <div className="p-4 rounded-lg border bg-card">
         <div className="flex items-center justify-between">
-          <div>
+          <div className="space-y-1">
             <h3 className="font-medium">{currentVehicle.name}</h3>
             <p className="text-sm text-muted-foreground">
               {currentVehicle.description}
@@ -30,7 +30,9 @@ export const VehicleDisplay = () => {
               Speed: {currentVehicle.speed}x
             </p>
           </div>
-          <Car className="w-8 h-8 text-primary" />
+          <div className="flex items-center justify-center bg-primary/10 p-4 rounded-full">
+            <Car className="w-8 h-8 text-primary" />
+          </div>
         </div>
       </div>
     </div>

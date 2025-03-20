@@ -33,15 +33,15 @@ export const VehicleShop = () => {
   const currentVehicle = VEHICLES.find(v => v.id === state.currentVehicle)!;
 
   return (
-    <div className="p-2 rounded-lg border bg-card text-sm">
-      <h2 className="text-base font-bold mb-2">Vehicle Shop</h2>
-      <div className="grid gap-2">
+    <div className="p-4 rounded-lg border bg-card text-sm h-full">
+      <h2 className="text-base font-bold mb-4 text-center border-b pb-2">Vehicle Shop</h2>
+      <div className="grid gap-3">
         {availableVehicles.map((vehicle) => (
           <div
             key={vehicle.id}
-            className={`p-3 rounded-lg border flex justify-between items-center ${
+            className={`p-4 rounded-lg border flex justify-between items-center ${
               vehicle.id === state.currentVehicle
-                ? "bg-card/50 border-border/50"
+                ? "bg-card/50 border-primary/30"
                 : "bg-card"
             }`}
           >
@@ -55,15 +55,15 @@ export const VehicleShop = () => {
               </p>
             </div>
             {vehicle.id === state.currentVehicle ? (
-              <span className="text-xs text-game-success px-2 py-1 border border-game-success/30 rounded">Current Vehicle</span>
+              <span className="text-xs text-game-success px-3 py-1.5 border border-game-success/30 rounded-md">Current Vehicle</span>
             ) : (
               <Button
                 onClick={() => handleBuyVehicle(vehicle.id)}
-                className="h-8 text-xs"
+                className="h-9 text-xs px-4"
                 variant="default"
                 size="sm"
               >
-                <Car className="mr-1 w-3 h-3" />
+                <Car className="mr-1.5 w-3 h-3" />
                 Purchase
               </Button>
             )}
@@ -72,9 +72,9 @@ export const VehicleShop = () => {
       </div>
       
       {availableVehicles.length === 0 && (
-        <div className="p-3 text-center text-muted-foreground text-sm">
+        <div className="p-4 text-center text-muted-foreground text-sm border rounded-lg mt-4">
           No vehicles available in this city.
-          <p className="text-xs">Travel to other cities to find different vehicles.</p>
+          <p className="text-xs mt-1">Travel to other cities to find different vehicles.</p>
         </div>
       )}
     </div>

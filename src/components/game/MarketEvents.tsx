@@ -31,15 +31,17 @@ export const MarketEvents = () => {
   };
 
   return (
-    <div className="mb-4 space-y-2">
-      <h3 className="text-lg font-medium">Active Market Events</h3>
+    <div className="mb-4 space-y-3">
+      <h3 className="text-lg font-medium text-center border-b pb-2">Active Market Events</h3>
       <div className="grid gap-2">
         {state.activeMarketEvents.map((event) => (
           <div
             key={event.id}
-            className="flex items-center gap-2 p-2 rounded-md bg-background/50 border border-border/50"
+            className="flex items-center gap-3 p-3 rounded-md bg-background/50 border border-border/50"
           >
-            {getEventIcon(event.type)}
+            <div className="p-2 rounded-full bg-card">
+              {getEventIcon(event.type)}
+            </div>
             <span className="text-sm">{event.description}</span>
           </div>
         ))}

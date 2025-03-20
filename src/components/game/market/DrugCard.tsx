@@ -22,10 +22,12 @@ export const DrugCard = ({
   onSell,
 }: DrugCardProps) => {
   return (
-    <div className="p-3 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 hover:border-border transition-colors">
+    <div className="p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 hover:border-border transition-colors">
       <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <DrugIcon className="w-5 h-5 text-muted-foreground" />
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 flex items-center justify-center bg-primary/10 rounded-full">
+            <DrugIcon className="w-5 h-5 text-primary" />
+          </div>
           <div>
             <h3 className="font-medium text-sm">{drug.name}</h3>
             <p className="text-xs text-muted-foreground">
@@ -38,11 +40,11 @@ export const DrugCard = ({
             )}
           </div>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="grid grid-cols-2 gap-2">
           <div className="flex flex-col space-y-1">
             <Button
               onClick={() => onBuy(drug.id, 1)}
-              className="h-6 px-2 py-1 text-xs"
+              className="h-7 px-3 py-0 text-xs"
               variant="default"
               size="sm"
             >
@@ -50,8 +52,8 @@ export const DrugCard = ({
             </Button>
             <Button
               onClick={() => onBuy(drug.id, -1)}
-              className="h-6 px-2 py-1 text-xs"
-              variant="secondary"
+              className="h-7 px-3 py-0 text-xs"
+              variant="outline"
               size="sm"
               title="Buy Maximum Affordable Amount"
             >
@@ -61,7 +63,7 @@ export const DrugCard = ({
           <div className="flex flex-col space-y-1">
             <Button
               onClick={() => onSell(drug.id, 1)}
-              className="h-6 px-2 py-1 text-xs"
+              className="h-7 px-3 py-0 text-xs"
               variant="destructive"
               size="sm"
             >
@@ -69,8 +71,8 @@ export const DrugCard = ({
             </Button>
             <Button
               onClick={() => onSell(drug.id, -1)}
-              className="h-6 px-2 py-1 text-xs"
-              variant="secondary"
+              className="h-7 px-3 py-0 text-xs"
+              variant="outline"
               size="sm"
               title="Sell All Units"
             >
