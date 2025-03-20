@@ -5,6 +5,7 @@
 
 @layer base {
   :root {
+    /* Light theme - kept for theme switching capability */
     --background: 240 20% 98%;
     --foreground: 240 10% 3.9%;
 
@@ -45,7 +46,8 @@
     --sidebar-ring: 266 83% 63%;
   }
 
-  .dark {
+  /* Apply dark theme by default */
+  :root {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
 
@@ -111,7 +113,7 @@
 /* Formal styling utility classes */
 @layer utilities {
   .card-formal {
-    @apply bg-card border rounded-lg shadow-md p-4;
+    @apply bg-card/80 border rounded-lg shadow-md p-4;
   }
 
   .header-formal {
@@ -131,7 +133,7 @@
   }
   
   .glass-card {
-    @apply bg-card/50 backdrop-blur-sm border border-border/20 shadow-sm;
+    @apply bg-card/30 backdrop-blur-sm border border-border/20 shadow-sm;
   }
   
   .formal-layout {
@@ -139,6 +141,6 @@
   }
   
   .formal-panel {
-    @apply p-4 rounded-lg bg-card border border-border shadow-sm;
+    @apply p-4 rounded-lg bg-card/50 border border-border/50 shadow-sm;
   }
 }
