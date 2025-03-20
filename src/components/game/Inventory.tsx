@@ -6,8 +6,8 @@ export const Inventory = () => {
   const { state } = useGame();
 
   return (
-    <div className="p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 text-sm">
-      <h2 className="text-base font-semibold mb-3 text-center border-b pb-2">Inventory</h2>
+    <div className="p-4 rounded-lg glass-card text-sm">
+      <h2 className="header-formal">Inventory</h2>
       {state.inventory.length > 0 ? (
         <div className="grid gap-2">
           {state.inventory.map((item) => {

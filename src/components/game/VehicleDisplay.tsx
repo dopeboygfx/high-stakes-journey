@@ -19,7 +19,7 @@ export const VehicleDisplay = () => {
           Visit Shop
         </Link>
       </div>
-      <div className="p-4 rounded-lg border bg-card">
+      <div className="formal-panel">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <h3 className="font-medium">{currentVehicle.name}</h3>

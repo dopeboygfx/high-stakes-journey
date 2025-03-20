@@ -9,7 +9,7 @@ export const GameHeader = () => {
   const currentCity = CITIES.find((city) => city.id === state.currentCity)!;
 
   return (
-    <div className="grid grid-cols-3 gap-4 p-4 bg-card rounded-lg border border-border/50 shadow-sm">
+    <div className="grid grid-cols-3 gap-4 p-4 formal-panel">
       <div className="flex flex-col items-center justify-center space-y-1 p-2">
         <div className="text-xs text-muted-foreground">Location</div>
         <div className="flex items-center space-x-1">
