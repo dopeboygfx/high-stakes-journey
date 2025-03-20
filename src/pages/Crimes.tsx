@@ -1,7 +1,7 @@
 
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, AlertTriangle } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { useGame } from '../context/GameContext';
 import { NerveStatus } from '../components/game/crimes/NerveStatus';
 import { CrimesList } from '../components/game/crimes/CrimesList';
@@ -37,15 +37,15 @@ const Crimes = () => {
   const highestNerveRequired = Math.max(...availableCrimes.map(crime => crime.nerveRequired));
   
   return (
-    <div className="container mx-auto p-3 space-y-4">
-      <div className="flex items-center gap-3">
+    <div className="container mx-auto p-2 space-y-2">
+      <div className="flex items-center gap-2">
         <Link
           to="/"
-          className="p-1.5 hover:bg-accent rounded-full transition-colors"
+          className="p-1 hover:bg-accent rounded-full transition-colors"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-4 h-4" />
         </Link>
-        <h1 className="text-xl font-bold">Criminal Activities</h1>
+        <h1 className="text-lg font-bold">Criminal Activities</h1>
       </div>
       
       <MarketHeader 
@@ -56,8 +56,8 @@ const Crimes = () => {
         nerveRequired={highestNerveRequired}
       />
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="space-y-4 md:col-span-2">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+        <div className="space-y-2 md:col-span-2">
           <NerveStatus 
             nerve={playerStats.nerve} 
             maxNerve={playerStats.maxNerve}
@@ -74,7 +74,7 @@ const Crimes = () => {
           />
         </div>
         
-        <div className="space-y-4">
+        <div>
           <PlayerStatsPanel />
         </div>
       </div>

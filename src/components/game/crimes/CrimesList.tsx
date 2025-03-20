@@ -50,38 +50,38 @@ export const CrimesList = ({
     .sort((a, b) => a.nerveRequired - b.nerveRequired);
   
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <div className="relative">
-        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground w-3.5 h-3.5" />
         <Input
           placeholder="Search crimes..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-8"
+          className="pl-7 h-8 text-sm"
         />
       </div>
       
       <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-3">
-          <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="available">Available</TabsTrigger>
-          <TabsTrigger value="city">This City</TabsTrigger>
+        <TabsList className="grid grid-cols-3 h-8">
+          <TabsTrigger value="all" className="text-xs">All</TabsTrigger>
+          <TabsTrigger value="available" className="text-xs">Available</TabsTrigger>
+          <TabsTrigger value="city" className="text-xs">This City</TabsTrigger>
         </TabsList>
       </Tabs>
       
       {filteredCrimes.length === 0 ? (
-        <div className="text-center py-6 border border-dashed rounded-lg">
-          <AlertTriangle className="w-8 h-8 mx-auto text-muted-foreground" />
-          <p className="text-sm text-muted-foreground mt-2">No crimes match your filters</p>
+        <div className="text-center py-4 border border-dashed rounded-lg">
+          <AlertTriangle className="w-6 h-6 mx-auto text-muted-foreground" />
+          <p className="text-xs text-muted-foreground mt-1">No crimes match your filters</p>
         </div>
       ) : (
-        <div className="grid gap-3">
+        <div className="grid gap-2">
           {filteredCrimes.map(crime => (
             <CrimeCard
               key={crime.id}
               crime={crime}
               playerNerve={playerNerve}
-              playerLevel={playerLevel} /* Fixed: using playerLevel prop directly instead of playerStats.level */
+              playerLevel={playerLevel}
               onCommit={onCommitCrime}
               isCityRestricted={!!crime.cityRestriction && crime.cityRestriction !== currentCity}
             />

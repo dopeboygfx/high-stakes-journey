@@ -83,66 +83,68 @@ export const CrimeCard = ({
   };
   
   return (
-    <div className={`p-3 rounded-lg border ${canCommit ? "border-border" : "border-destructive/30"} bg-card/60 backdrop-blur-sm`}>
+    <div className={`p-2 rounded-lg border ${canCommit ? "border-border" : "border-destructive/30"} bg-card/60 backdrop-blur-sm`}>
       <div className="flex justify-between items-start">
         <div>
-          <h3 className="font-semibold">{crime.name}</h3>
+          <h3 className="font-semibold text-sm">{crime.name}</h3>
           <p className="text-xs text-muted-foreground">{crime.description}</p>
         </div>
         
         {crime.requiresMastery && (
-          <Badge variant="success" className="ml-2">Mastery</Badge>
+          <Badge variant="success" className="ml-1 text-[10px] p-0.5">Mastery</Badge>
         )}
       </div>
       
-      <div className="grid grid-cols-2 gap-2 mt-2 text-xs">
+      <div className="grid grid-cols-3 gap-1 mt-1.5 text-[10px]">
         <div className="flex items-center gap-1">
-          <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
+          <AlertTriangle className="w-3 h-3 text-red-500" />
           <span>Nerve: {crime.nerveRequired}</span>
         </div>
         
         <div className="flex items-center gap-1">
-          <DollarSign className="w-3.5 h-3.5 text-green-500" />
+          <DollarSign className="w-3 h-3 text-green-500" />
           <span>{formatMoney(crime.moneyGain)}</span>
         </div>
         
         <div className="flex items-center gap-1">
-          <Award className="w-3.5 h-3.5 text-blue-500" />
+          <Award className="w-3 h-3 text-blue-500" />
           <span>{crime.expGain} XP</span>
         </div>
-        
+      </div>
+      
+      <div className="grid grid-cols-2 gap-1 mt-1 text-[10px]">
         <div className="flex items-center gap-1">
           <span className={getSuccessColor()}>Success: {getSuccessEstimate()}</span>
         </div>
         
         {crime.cityRestriction && (
-          <div className="flex items-center gap-1 col-span-2">
-            <MapPin className="w-3.5 h-3.5 text-purple-500" />
-            <span className="capitalize">{crime.cityRestriction.replace('_', ' ')} only</span>
+          <div className="flex items-center gap-1 justify-end">
+            <MapPin className="w-3 h-3 text-purple-500" />
+            <span className="capitalize">{crime.cityRestriction.replace('_', ' ')}</span>
           </div>
         )}
       </div>
       
       {isOnCooldown && (
-        <div className="mt-2">
-          <div className="flex justify-between text-xs mb-1">
+        <div className="mt-1.5">
+          <div className="flex justify-between text-[10px] mb-0.5">
             <span>Cooldown:</span>
             <span>{getCooldownText()}</span>
           </div>
-          <Progress value={cooldownProgress} className="h-1.5" />
+          <Progress value={cooldownProgress} className="h-1" />
         </div>
       )}
       
-      <div className="mt-3">
+      <div className="mt-2">
         <Button 
           onClick={() => onCommit(crime.id)} 
-          className="w-full" 
+          className="w-full text-xs py-0 h-7" 
           size="sm"
           variant={canCommit ? "default" : "outline"}
           disabled={!canCommit}
         >
           {isOnCooldown ? (
-            <><Clock className="w-3.5 h-3.5 mr-1" /> Cooldown</>
+            <><Clock className="w-3 h-3 mr-1" /> Cooldown</>
           ) : isCityRestricted ? (
             "Wrong City"
           ) : !hasEnoughNerve ? (
