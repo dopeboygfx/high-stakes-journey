@@ -1,3 +1,4 @@
+
 export type Drug = {
   id: string;
   name: string;
