@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGame } from '../context/GameContext';
@@ -154,20 +153,20 @@ const Gym = () => {
   const speedEffectiveness = getTrainingEffectiveness(speedGain);
   
   return (
-    <div className="container mx-auto p-4 space-y-6">
-      <div className="flex items-center gap-4">
+    <div className="container mx-auto p-2 space-y-2">
+      <div className="flex items-center gap-2">
         <button
           onClick={() => navigate("/")}
-          className="p-2 hover:bg-accent rounded-full transition-colors"
+          className="p-1 hover:bg-accent rounded-full transition-colors"
         >
-          <ArrowLeft className="w-6 h-6" />
+          <ArrowLeft className="w-4 h-4" />
         </button>
-        <h1 className="text-2xl font-bold">City Gym</h1>
+        <h1 className="text-lg font-bold">City Gym</h1>
       </div>
       
       <TrainingEffectivenessInfo />
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
         <PlayerLevelCard 
           playerStats={playerStats}
           expPercentage={expPercentage}
@@ -213,12 +212,12 @@ const Gym = () => {
         />
       </div>
       
-      <Card className="p-4 mt-4">
-        <div className="flex items-center gap-2 mb-2">
-          <Zap className="h-5 w-5 text-yellow-500" />
-          <h3 className="font-semibold">Your Awake Level</h3>
+      <Card className="p-3 mt-2">
+        <div className="flex items-center gap-1 mb-1">
+          <Zap className="h-4 w-4 text-yellow-500" />
+          <h3 className="font-semibold text-sm">Your Awake Level</h3>
         </div>
-        <p className="text-sm text-muted-foreground mb-2">
+        <p className="text-xs text-muted-foreground mb-1">
           Your current awake level: <span className="font-medium">{playerStats.awake}/10000</span>
         </p>
         <p className="text-xs text-muted-foreground">

@@ -45,15 +45,15 @@ export const AttributeCard = ({
   };
 
   return (
-    <div className="p-5 bg-card rounded-lg border flex flex-col items-center justify-center h-full">
-      <Icon className="h-12 w-12 mb-3 text-primary" />
-      <h3 className="text-lg font-semibold">{name}</h3>
-      <p className="text-3xl font-bold my-2">{value}</p>
-      <p className="text-sm text-muted-foreground text-center mb-2">
+    <div className="p-3 bg-card rounded-lg border flex flex-col items-center justify-center h-full">
+      <Icon className="h-8 w-8 mb-2 text-primary" />
+      <h3 className="text-sm font-semibold">{name}</h3>
+      <p className="text-2xl font-bold my-1">{value}</p>
+      <p className="text-xs text-muted-foreground text-center mb-1">
         {description}
       </p>
       
-      <div className="w-full flex justify-between items-center mb-4 text-xs px-2">
+      <div className="w-full flex justify-between items-center mb-2 text-xs px-1">
         <Badge variant="outline" className={getEffectivenessColor()}>
           {getEffectivenessLabel()}
         </Badge>
@@ -63,7 +63,8 @@ export const AttributeCard = ({
       <Button 
         onClick={onTrain}
         disabled={disabled}
-        className="w-full"
+        className="w-full text-xs py-1 h-auto"
+        size="sm"
       >
         Train {name} (1 Energy)
       </Button>

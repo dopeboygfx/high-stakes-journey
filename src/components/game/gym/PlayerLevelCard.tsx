@@ -50,23 +50,23 @@ export const PlayerLevelCard = ({
   const isAwakeLow = playerStats.awake < 2000;
 
   return (
-    <div className="col-span-1 lg:col-span-3 p-5 bg-card rounded-lg border">
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
+    <div className="col-span-1 lg:col-span-3 p-3 bg-card rounded-lg border">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-2">
         <div>
-          <h2 className="text-xl font-bold">Level {playerStats.level}</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="text-base font-bold">Level {playerStats.level}</h2>
+          <p className="text-xs text-muted-foreground">
             XP: {playerStats.exp}/{playerStats.expToNextLevel}
           </p>
           
           <div className="flex items-center mt-1">
-            <p className="text-sm text-muted-foreground mr-2">
+            <p className="text-xs text-muted-foreground mr-1">
               Awake: {playerStats.awake}/10000
             </p>
             {isAwakeLow && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
-                    <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                    <AlertTriangle className="h-3 w-3 text-yellow-500" />
                   </TooltipTrigger>
                   <TooltipContent>
                     <p className="text-xs">Awake level is low, training effectiveness reduced!</p>
@@ -76,59 +76,60 @@ export const PlayerLevelCard = ({
             )}
           </div>
           
-          <div className="mt-2">
+          <div className="mt-1">
             {relevantOptimalLevels.length > 0 ? (
               <>
-                <p className="text-sm font-medium">
+                <p className="text-xs font-medium">
                   Nearby optimal levels: {relevantOptimalLevels.join(', ')}
                 </p>
                 {isAtOptimalLevel ? (
-                  <p className="text-sm text-green-500 font-bold flex items-center">
-                    <Flame className="h-4 w-4 mr-1" /> You're at an optimal training level!
+                  <p className="text-xs text-green-500 font-bold flex items-center">
+                    <Flame className="h-3 w-3 mr-1" /> You're at an optimal training level!
                   </p>
                 ) : (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     Next optimal level: <span className="font-semibold">{closestOptimalLevel}</span>
                   </p>
                 )}
               </>
             ) : (
-              <p className="text-sm text-muted-foreground">No nearby optimal levels available</p>
+              <p className="text-xs text-muted-foreground">No nearby optimal levels available</p>
             )}
           </div>
         </div>
         
-        <div className="flex items-center mt-4 sm:mt-0">
-          <div className="mr-4">
-            <p className="text-sm text-muted-foreground">Energy</p>
-            <p className="font-medium">{playerStats.energy}/{playerStats.maxEnergy}</p>
+        <div className="flex items-center mt-2 sm:mt-0">
+          <div className="mr-2">
+            <p className="text-xs text-muted-foreground">Energy</p>
+            <p className="text-xs font-medium">{playerStats.energy}/{playerStats.maxEnergy}</p>
           </div>
           <Button 
             variant="outline"
             onClick={onRestoreEnergy}
             disabled={playerStats.energy >= playerStats.maxEnergy || money < energyRestoreCost}
-            className="flex items-center gap-2"
+            className="flex items-center gap-1 text-xs py-1 h-auto"
+            size="sm"
           >
-            <RefreshCw className="h-4 w-4" />
+            <RefreshCw className="h-3 w-3" />
             Restore ({formatMoney(energyRestoreCost)})
           </Button>
         </div>
       </div>
       
-      <div className="space-y-3">
+      <div className="space-y-2">
         <div>
           <div className="flex justify-between mb-1">
-            <span className="text-sm">Experience</span>
-            <span className="text-sm">{Math.round(expPercentage)}%</span>
+            <span className="text-xs">Experience</span>
+            <span className="text-xs">{Math.round(expPercentage)}%</span>
           </div>
-          <Progress value={expPercentage} className="h-2" />
+          <Progress value={expPercentage} className="h-1.5" />
         </div>
         <div>
           <div className="flex justify-between mb-1">
-            <span className="text-sm">Energy</span>
-            <span className="text-sm">{Math.round(energyPercentage)}%</span>
+            <span className="text-xs">Energy</span>
+            <span className="text-xs">{Math.round(energyPercentage)}%</span>
           </div>
-          <Progress value={energyPercentage} className="h-2" />
+          <Progress value={energyPercentage} className="h-1.5" />
         </div>
       </div>
     </div>
