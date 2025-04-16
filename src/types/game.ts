@@ -194,6 +194,9 @@ export type GameState = {
   activePoliceEncounter?: PoliceEncounter;
   availableCrimes: Crime[];
   lastCrimeResult?: CrimeResult;
+  pricesLocked: boolean; // Add this to track if prices are temporarily locked
+  lastTransaction: number; // Timestamp of last transaction 
+  priceUpdateTimestamp: number; // Timestamp when prices were last updated
   stats: {
     dealsCompleted: number;
     citiesVisited: string[];
@@ -238,4 +241,6 @@ export type GameAction =
   | { type: "BOOST_ATTRIBUTE"; attribute: "strength" | "defense" | "speed"; amount: number }
   | { type: "RECORD_STAT"; statType: "dealsCompleted" | "fightswon" | "trainingSessionsCompleted" | "totalMoneyEarned"; value: number }
   | { type: "COMMIT_CRIME"; crimeId: string }
-  | { type: "REGENERATE_NERVE" };
+  | { type: "REGENERATE_NERVE" }
+  | { type: "LOCK_PRICES" }
+  | { type: "UNLOCK_PRICES" };

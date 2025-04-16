@@ -20,6 +20,7 @@ export const MarketPlace = () => {
   const currentCity = CITIES.find((city) => city.id === state.currentCity)!;
   const { prices, isHighRisk, buyDrug, sellDrug } = useMarket(currentCity.id);
   const playerLevel = state.playerStats.level;
+  const isPricesLocked = state.pricesLocked;
 
   return (
     <div className="space-y-4">
@@ -27,6 +28,7 @@ export const MarketPlace = () => {
         isHighRisk={isHighRisk} 
         cityLevel={currentCity.levelRequirement || 1}
         playerLevel={playerLevel}
+        isPricesLocked={isPricesLocked}
       />
       <MarketEvents />
       <div className="grid gap-4">
@@ -45,6 +47,7 @@ export const MarketPlace = () => {
               hasActiveEvents={affectingEvents.length > 0}
               onBuy={buyDrug}
               onSell={sellDrug}
+              disabled={isPricesLocked}
             />
           );
         })}

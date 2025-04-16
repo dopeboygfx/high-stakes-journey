@@ -177,6 +177,17 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
   
   switch (action.type) {
     case "BUY_DRUG":
+      // If prices are locked and it's a rapid transaction, apply a penalty
+      if (state.pricesLocked && Date.now() - state.lastTransaction < 5000) {
+        toast.error("Market authorities have noticed your activity! Prices are temporarily locked.");
+        updatedState = {
+          ...state,
+          heat: Math.min(state.heat + 15, 100), // Increase heat for trying to exploit
+          lastTransaction: Date.now()
+        };
+        break;
+      }
+      
       updatedState = {
         ...state,
         money: state.money - action.cost,
@@ -189,10 +200,22 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
                 ?.quantity || 0) + action.quantity,
           },
         ],
+        lastTransaction: Date.now()
       };
       break;
       
     case "SELL_DRUG": {
+      // If prices are locked and it's a rapid transaction, apply a penalty
+      if (state.pricesLocked && Date.now() - state.lastTransaction < 5000) {
+        toast.error("Market authorities have noticed your activity! Prices are temporarily locked.");
+        updatedState = {
+          ...state,
+          heat: Math.min(state.heat + 15, 100), // Increase heat for trying to exploit
+          lastTransaction: Date.now()
+        };
+        break;
+      }
+      
       const newInventory = state.inventory
         .map((item) =>
           item.drugId === action.drugId
@@ -210,7 +233,8 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
           ...state.stats,
           dealsCompleted: state.stats.dealsCompleted + 1,
           totalMoneyEarned: state.stats.totalMoneyEarned + action.profit
-        }
+        },
+        lastTransaction: Date.now()
       };
       break;
     }
@@ -230,6 +254,7 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
         ? state.stats.citiesVisited 
         : [...state.stats.citiesVisited, action.cityId];
       
+      // Force price recalculation on city change to prevent market arbitrage
       updatedState = {
         ...state,
         currentCity: action.cityId,
@@ -239,7 +264,9 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
         stats: {
           ...state.stats,
           citiesVisited: updatedVisitedCities
-        }
+        },
+        priceUpdateTimestamp: Date.now(), // Reset prices when traveling
+        pricesLocked: false // Reset price lock when traveling
       };
       
       // Update available crimes for the new city
@@ -257,6 +284,21 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
       break;
     }
     
+    case "LOCK_PRICES":
+      updatedState = {
+        ...state,
+        pricesLocked: true
+      };
+      break;
+      
+    case "UNLOCK_PRICES":
+      updatedState = {
+        ...state,
+        pricesLocked: false,
+        priceUpdateTimestamp: Date.now() // Update timestamp to recalculate prices
+      };
+      break;
+      
     case "SET_TRAVELING":
       updatedState = {
         ...state,

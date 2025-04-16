@@ -1,49 +1,58 @@
 
-import { AlertTriangle } from "lucide-react";
-import { Badge } from "../../ui/badge";
+import { AlertCircle, LockIcon } from "lucide-react";
+import { Alert, AlertDescription } from "../../ui/alert";
 
 type MarketHeaderProps = {
   isHighRisk: boolean;
-  cityLevel?: number;
+  cityLevel: number;
   playerLevel: number;
-  isHighNerve?: boolean;
-  nerveRequired?: number;
+  isPricesLocked?: boolean;
 };
 
 export const MarketHeader = ({ 
   isHighRisk, 
-  cityLevel = 1, 
+  cityLevel, 
   playerLevel,
-  isHighNerve = false,
-  nerveRequired
+  isPricesLocked = false
 }: MarketHeaderProps) => {
+  // Check if player meets level requirement
+  const canAccess = playerLevel >= cityLevel;
+  
   return (
-    <div className="p-3 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50">
-      <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold">Drug Market</h2>
-        <div className="flex items-center gap-2">
-          {isHighRisk && (
-            <div className="flex items-center">
-              <AlertTriangle className="w-4 h-4 text-destructive mr-1" />
-              <span className="text-xs text-destructive font-medium">High Risk</span>
-            </div>
-          )}
-          
-          {isHighNerve && nerveRequired && (
-            <div className="flex items-center">
-              <AlertTriangle className="w-4 h-4 text-yellow-500 mr-1" />
-              <span className="text-xs text-yellow-500 font-medium">Nerve {nerveRequired}+</span>
-            </div>
-          )}
-          
-          <Badge variant={cityLevel <= playerLevel ? "default" : "destructive"}>
-            Level {cityLevel} Required
-          </Badge>
-        </div>
+    <div className="space-y-2">
+      {isHighRisk && (
+        <Alert variant="destructive" className="py-3">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="text-xs ml-2">
+            Police activity is high in this area. Trade with caution!
+          </AlertDescription>
+        </Alert>
+      )}
+      
+      {!canAccess && (
+        <Alert variant="destructive" className="py-3">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="text-xs ml-2">
+            You need to be level {cityLevel} to trade in this city!
+          </AlertDescription>
+        </Alert>
+      )}
+      
+      {isPricesLocked && (
+        <Alert variant="warning" className="py-3 bg-amber-500/10 border-amber-500/50 text-amber-500">
+          <LockIcon className="h-4 w-4" />
+          <AlertDescription className="text-xs ml-2">
+            Market authorities have locked prices temporarily due to suspicious activity!
+          </AlertDescription>
+        </Alert>
+      )}
+      
+      <div className="text-sm">
+        <h2 className="text-base font-semibold">Black Market</h2>
+        <p className="text-muted-foreground text-xs">
+          Buy low, sell high. Watch for market events that affect prices!
+        </p>
       </div>
-      <p className="text-sm text-muted-foreground mt-1">
-        Buy low, sell high, and beware the authorities.
-      </p>
     </div>
   );
 };

@@ -11,6 +11,7 @@ type DrugCardProps = {
   hasActiveEvents: boolean;
   onBuy: (drugId: string, quantity: number) => void;
   onSell: (drugId: string, quantity: number) => void;
+  disabled?: boolean;
 };
 
 export const DrugCard = ({
@@ -20,6 +21,7 @@ export const DrugCard = ({
   hasActiveEvents,
   onBuy,
   onSell,
+  disabled = false,
 }: DrugCardProps) => {
   return (
     <div className="p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 hover:border-border transition-colors">
@@ -38,6 +40,11 @@ export const DrugCard = ({
                 Market event affecting price!
               </p>
             )}
+            {disabled && (
+              <p className="text-xs text-destructive">
+                Market temporarily locked!
+              </p>
+            )}
           </div>
         </div>
         <div className="grid grid-cols-2 gap-2">
@@ -47,6 +54,7 @@ export const DrugCard = ({
               className="h-7 px-3 py-0 text-xs"
               variant="default"
               size="sm"
+              disabled={disabled}
             >
               Buy
             </Button>
@@ -56,6 +64,7 @@ export const DrugCard = ({
               variant="outline"
               size="sm"
               title="Buy Maximum Affordable Amount"
+              disabled={disabled}
             >
               Max <ArrowUp className="ml-1 w-3 h-3" />
             </Button>
@@ -66,6 +75,7 @@ export const DrugCard = ({
               className="h-7 px-3 py-0 text-xs"
               variant="destructive"
               size="sm"
+              disabled={disabled}
             >
               Sell
             </Button>
@@ -75,6 +85,7 @@ export const DrugCard = ({
               variant="outline"
               size="sm"
               title="Sell All Units"
+              disabled={disabled}
             >
               Max <ArrowDown className="ml-1 w-3 h-3" />
             </Button>

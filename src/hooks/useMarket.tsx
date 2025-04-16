@@ -47,6 +47,15 @@ export const useMarket = (cityId: string) => {
     return () => clearInterval(eventInterval);
   }, [currentCity, dispatch]);
 
+  // Update prices when relevant state changes OR when a player visits
+  // by using a unique key based on a timestamp when prices should be recalculated
+  const [priceUpdateKey, setPriceUpdateKey] = useState(Date.now());
+  
+  // Force price update when component mounts or when relevant events occur
+  useEffect(() => {
+    setPriceUpdateKey(Date.now());
+  }, []);
+  
   // Update prices when relevant state changes
   useEffect(() => {
     const newPrices: Record<string, number> = {};
@@ -59,7 +68,8 @@ export const useMarket = (cityId: string) => {
         state.activeMarketEvents,
         state.abilities,
         cityId,
-        state.reputations
+        state.reputations,
+        priceUpdateKey // Add this key to ensure prices remain consistent
       );
     });
     setCityPrices(newPrices);
@@ -68,7 +78,8 @@ export const useMarket = (cityId: string) => {
     cityId,
     state.activeMarketEvents,
     state.abilities,
-    state.reputations
+    state.reputations,
+    priceUpdateKey // Add this to dependencies
   ]);
 
   const handleBuyDrug = useCallback((drugId: string, quantity: number = 1) => {
@@ -102,6 +113,12 @@ export const useMarket = (cityId: string) => {
       }
     }
     
+    // Lock prices for a short period to prevent exploits
+    dispatch({ type: "LOCK_PRICES" });
+    setTimeout(() => {
+      dispatch({ type: "UNLOCK_PRICES" });
+    }, 10000); // 10 second cooldown on price changes
+    
     dispatch({ type: "BUY_DRUG", drugId, quantity: actualQuantity, cost: totalCost });
     toast.success(`Bought ${actualQuantity} units!`);
 
@@ -130,6 +147,12 @@ export const useMarket = (cityId: string) => {
       toast.error("Suspicious activity reported!");
       dispatch({ type: "INCREASE_HEAT" });
     }
+    
+    // Lock prices for a short period to prevent exploits
+    dispatch({ type: "LOCK_PRICES" });
+    setTimeout(() => {
+      dispatch({ type: "UNLOCK_PRICES" });
+    }, 10000); // 10 second cooldown on price changes
     
     dispatch({ type: "SELL_DRUG", drugId, quantity: actualQuantity, profit: totalProfit });
     toast.success(`Sold ${actualQuantity} units!`);
