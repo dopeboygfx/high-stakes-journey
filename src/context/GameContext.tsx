@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useReducer } from "react";
 import { GameState, GameAction } from "../types/game";
 import { initialState } from "./gameInitialState";
-import { gameReducer } from "./gameReducer";
+import { gameReducer } from "./reducers";
 
 const GameContext = createContext<{
   state: GameState;
