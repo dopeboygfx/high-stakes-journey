@@ -90,5 +90,9 @@ export const initialState: GameState = {
     trainingSessionsCompleted: 0,
     crimesCompleted: 0,
     successfulCrimes: 0
-  }
+  },
+  // Add the missing properties
+  pricesLocked: false,
+  lastTransaction: Date.now(),
+  priceUpdateTimestamp: Date.now()
 };

@@ -5,7 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useGame } from '../context/GameContext';
 import { NerveStatus } from '../components/game/crimes/NerveStatus';
 import { CrimesList } from '../components/game/crimes/CrimesList';
-import { MarketHeader } from '../components/game/market/MarketHeader';
+import { CrimesMarketHeader } from '../components/game/crimes/CrimesMarketHeader';
 import { PlayerStatsPanel } from '../components/game/PlayerStatsPanel';
 
 const Crimes = () => {
@@ -48,7 +48,7 @@ const Crimes = () => {
         <h1 className="text-lg font-bold">Criminal Activities</h1>
       </div>
       
-      <MarketHeader 
+      <CrimesMarketHeader 
         isHighRisk={false} 
         cityLevel={city.levelRequirement || 1}
         playerLevel={playerStats.level}

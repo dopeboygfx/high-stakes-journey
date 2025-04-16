@@ -1,20 +1,22 @@
 
-import { AlertCircle, LockIcon } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "../../ui/alert";
 
-type MarketHeaderProps = {
+type CrimesMarketHeaderProps = {
   isHighRisk: boolean;
   cityLevel: number;
   playerLevel: number;
-  isPricesLocked?: boolean;
+  isHighNerve?: boolean;
+  nerveRequired?: number;
 };
 
-export const MarketHeader = ({ 
+export const CrimesMarketHeader = ({ 
   isHighRisk, 
   cityLevel, 
   playerLevel,
-  isPricesLocked = false
-}: MarketHeaderProps) => {
+  isHighNerve = false,
+  nerveRequired = 0
+}: CrimesMarketHeaderProps) => {
   // Check if player meets level requirement
   const canAccess = playerLevel >= cityLevel;
   
@@ -24,7 +26,7 @@ export const MarketHeader = ({
         <Alert variant="destructive" className="py-3">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription className="text-xs ml-2">
-            Police activity is high in this area. Trade with caution!
+            Police activity is high in this area. Be careful!
           </AlertDescription>
         </Alert>
       )}
@@ -33,24 +35,24 @@ export const MarketHeader = ({
         <Alert variant="destructive" className="py-3">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription className="text-xs ml-2">
-            You need to be level {cityLevel} to trade in this city!
+            You need to be level {cityLevel} to operate in this city!
           </AlertDescription>
         </Alert>
       )}
       
-      {isPricesLocked && (
+      {isHighNerve && (
         <Alert variant="destructive" className="py-3 bg-amber-500/10 border-amber-500/50 text-amber-500">
-          <LockIcon className="h-4 w-4" />
+          <AlertCircle className="h-4 w-4" />
           <AlertDescription className="text-xs ml-2">
-            Market authorities have locked prices temporarily due to suspicious activity!
+            Some crimes require up to {nerveRequired} nerve points!
           </AlertDescription>
         </Alert>
       )}
       
       <div className="text-sm">
-        <h2 className="text-base font-semibold">Black Market</h2>
+        <h2 className="text-base font-semibold">Criminal Activities</h2>
         <p className="text-muted-foreground text-xs">
-          Buy low, sell high. Watch for market events that affect prices!
+          Commit crimes to earn money and experience, but be careful of the police!
         </p>
       </div>
     </div>
